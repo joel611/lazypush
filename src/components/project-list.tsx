@@ -1,13 +1,13 @@
-import { For } from "solid-js"
-import { projects, projectIndex, focused } from "../store"
+import { For } from "solid-js";
+import { focused, projectIndex, projects } from "../store";
 
 interface Props {
-  width: number
-  height: number
+  height: number;
+  width: number;
 }
 
 export const ProjectList = (props: Props) => {
-  const isFocused = () => focused() === "projects"
+  const isFocused = () => focused() === "projects";
 
   return (
     <box
@@ -28,13 +28,15 @@ export const ProjectList = (props: Props) => {
           <text
             style={{
               color: i() === projectIndex() ? "#000000" : "#CCCCCC",
-              backgroundColor: i() === projectIndex() ? "#00FFFF" : "transparent",
+              backgroundColor:
+                i() === projectIndex() ? "#00FFFF" : "transparent",
             }}
           >
-            {i() === projectIndex() ? "> " : "  "}{project.name}
+            {i() === projectIndex() ? "> " : "  "}
+            {project.name}
           </text>
         )}
       </For>
     </box>
-  )
-}
+  );
+};

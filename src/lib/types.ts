@@ -1,67 +1,67 @@
 export interface Project {
-  id: string
-  name: string
-  createdAt: string
+  createdAt: string;
+  id: string;
+  name: string;
 }
 
 export interface Environment {
-  id: string
-  name: string
-  serviceAccountPath: string
-  createdAt: string
+  createdAt: string;
+  id: string;
+  name: string;
+  serviceAccountPath: string;
 }
 
 export interface Device {
-  id: string
-  name: string
-  platform: "ios" | "android"
-  token: string
-  createdAt: string
+  createdAt: string;
+  id: string;
+  name: string;
+  platform: "ios" | "android";
+  token: string;
 }
 
 export interface FcmMessage {
-  notification: {
-    title: string
-    body: string
-    imageUrl?: string
-  }
-  data?: Record<string, string>
   android?: {
-    priority?: "high" | "normal"
-  }
+    priority?: "high" | "normal";
+  };
   apns?: {
-    headers?: Record<string, string>
+    headers?: Record<string, string>;
     payload?: {
       aps?: {
-        contentAvailable?: number
-        mutableContent?: number
-      }
-    }
-  }
+        contentAvailable?: number;
+        mutableContent?: number;
+      };
+    };
+  };
+  data?: Record<string, string>;
+  notification: {
+    title: string;
+    body: string;
+    imageUrl?: string;
+  };
 }
 
 export interface MessageTemplate {
-  id: string
-  name: string
-  message: FcmMessage
-  createdAt: string
+  createdAt: string;
+  id: string;
+  message: FcmMessage;
+  name: string;
 }
 
-export type SendTargetType = "devices" | "topic" | "all"
+export type SendTargetType = "devices" | "topic" | "all";
 
 export interface SendLogEntry {
-  timestamp: string
-  templateName?: string
-  targetType: SendTargetType
-  targetInfo: string   // comma-joined device names, topic string, or "all"
-  results: SendResult[]
+  results: SendResult[];
+  targetInfo: string; // comma-joined device names, topic string, or "all"
+  targetType: SendTargetType;
+  templateName?: string;
+  timestamp: string;
 }
 
 export interface SendResult {
-  deviceName: string
-  token: string
-  success: boolean
-  error?: string
+  deviceName: string;
+  error?: string;
+  success: boolean;
+  token: string;
 }
 
 export type ModalState =
@@ -71,4 +71,4 @@ export type ModalState =
   | { type: "template"; template?: MessageTemplate }
   | { type: "device"; device?: Device }
   | { type: "message" }
-  | { type: "send" }
+  | { type: "send" };

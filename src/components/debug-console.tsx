@@ -1,12 +1,12 @@
-import { For } from "solid-js"
-import { sendLog, consoleOffset, focused } from "../store"
+import { For } from "solid-js";
+import { consoleOffset, focused, sendLog } from "../store";
 
 interface Props {
-  height: number
+  height: number;
 }
 
 export const DebugConsole = (props: Props) => {
-  const isFocused = () => focused() === "console"
+  const isFocused = () => focused() === "console";
 
   return (
     <box
@@ -25,17 +25,22 @@ export const DebugConsole = (props: Props) => {
       </text>
       <For each={sendLog().slice(consoleOffset())}>
         {(entry) => {
-          const ts = new Date(entry.timestamp).toLocaleTimeString()
-          const allOk = entry.results.every(r => r.success)
-          const okCount = entry.results.filter(r => r.success).length
-          const icon = allOk ? "✓" : "✗"
-          const iconColor = allOk ? "#00FF00" : "#FF4444"
-          const label = entry.templateName ? `${entry.templateName}` : "(one-off)"
-          const target = entry.targetType === "topic"
-            ? `topic:${entry.targetInfo}`
-            : entry.targetType === "all"
-            ? "all"
-            : `devices (${okCount}/${entry.results.length})`
+          const ts = new Date(entry.timestamp).toLocaleTimeString();
+          const allOk = entry.results.every((r) => r.success);
+          const okCount = entry.results.filter((r) => r.success).length;
+          const icon = allOk ? "✓" : "✗";
+          const iconColor = allOk ? "#00FF00" : "#FF4444";
+          const label = entry.templateName
+            ? `${entry.templateName}`
+            : "(one-off)";
+          let target: string;
+          if (entry.targetType === "topic") {
+            target = `topic:${entry.targetInfo}`;
+          } else if (entry.targetType === "all") {
+            target = "all";
+          } else {
+            target = `devices (${okCount}/${entry.results.length})`;
+          }
 
           return (
             <box style={{ flexDirection: "column", marginTop: 0 }}>
@@ -45,7 +50,7 @@ export const DebugConsole = (props: Props) => {
                 <span style={{ color: "#FFFFFF" }}>{label}</span>
                 <span style={{ color: "#888888" }}> → {target}</span>
               </text>
-              <For each={entry.results.filter(r => !r.success)}>
+              <For each={entry.results.filter((r) => !r.success)}>
                 {(r) => (
                   <text style={{ color: "#FF4444", marginLeft: 2 }}>
                     ERR {r.deviceName}: {r.error}
@@ -53,9 +58,9 @@ export const DebugConsole = (props: Props) => {
                 )}
               </For>
             </box>
-          )
+          );
         }}
       </For>
     </box>
-  )
-}
+  );
+};

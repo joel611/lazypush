@@ -1,13 +1,13 @@
-import { For } from "solid-js"
-import { templates, templateIndex, focused } from "../store"
+import { For } from "solid-js";
+import { focused, templateIndex, templates } from "../store";
 
 interface Props {
-  width: number
-  height: number
+  height: number;
+  width: number;
 }
 
 export const TemplateList = (props: Props) => {
-  const isFocused = () => focused() === "templates"
+  const isFocused = () => focused() === "templates";
 
   return (
     <box
@@ -28,13 +28,15 @@ export const TemplateList = (props: Props) => {
           <text
             style={{
               color: i() === templateIndex() ? "#000000" : "#CCCCCC",
-              backgroundColor: i() === templateIndex() ? "#FFAA00" : "transparent",
+              backgroundColor:
+                i() === templateIndex() ? "#FFAA00" : "transparent",
             }}
           >
-            {i() === templateIndex() ? "> " : "  "}{tpl.name}
+            {i() === templateIndex() ? "> " : "  "}
+            {tpl.name}
           </text>
         )}
       </For>
     </box>
-  )
-}
+  );
+};

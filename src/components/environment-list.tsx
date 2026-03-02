@@ -1,13 +1,13 @@
-import { For } from "solid-js"
-import { environments, environmentIndex, focused } from "../store"
+import { For } from "solid-js";
+import { environmentIndex, environments, focused } from "../store";
 
 interface Props {
-  width: number
-  height: number
+  height: number;
+  width: number;
 }
 
 export const EnvironmentList = (props: Props) => {
-  const isFocused = () => focused() === "environments"
+  const isFocused = () => focused() === "environments";
 
   return (
     <box
@@ -28,13 +28,15 @@ export const EnvironmentList = (props: Props) => {
           <text
             style={{
               color: i() === environmentIndex() ? "#000000" : "#CCCCCC",
-              backgroundColor: i() === environmentIndex() ? "#00FF88" : "transparent",
+              backgroundColor:
+                i() === environmentIndex() ? "#00FF88" : "transparent",
             }}
           >
-            {i() === environmentIndex() ? "> " : "  "}{env.name}
+            {i() === environmentIndex() ? "> " : "  "}
+            {env.name}
           </text>
         )}
       </For>
     </box>
-  )
-}
+  );
+};

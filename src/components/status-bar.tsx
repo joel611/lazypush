@@ -1,8 +1,8 @@
-import { focused, modal } from "../store"
-import { Show } from "solid-js"
+import { Show } from "solid-js";
+import { modal } from "../store";
 
 export const StatusBar = () => {
-  const isModal = () => modal().type !== "none"
+  const isModal = () => modal().type !== "none";
 
   return (
     <box style={{ width: "100%", padding: 1, backgroundColor: "#222222" }}>
@@ -20,5 +20,5 @@ export const StatusBar = () => {
         </text>
       </Show>
     </box>
-  )
-}
+  );
+};

@@ -1,12 +1,12 @@
-import { For } from "solid-js"
-import { devices, deviceIndex, selectedDeviceIds, focused } from "../store"
+import { For } from "solid-js";
+import { deviceIndex, devices, focused, selectedDeviceIds } from "../store";
 
 interface Props {
-  height: number
+  height: number;
 }
 
 export const DeviceList = (props: Props) => {
-  const isFocused = () => focused() === "devices"
+  const isFocused = () => focused() === "devices";
 
   return (
     <box
@@ -24,8 +24,8 @@ export const DeviceList = (props: Props) => {
       </text>
       <For each={devices()}>
         {(device, i) => {
-          const isSelected = () => selectedDeviceIds().has(device.id)
-          const isCurrent = () => i() === deviceIndex()
+          const isSelected = () => selectedDeviceIds().has(device.id);
+          const isCurrent = () => i() === deviceIndex();
           return (
             <text
               style={{
@@ -37,9 +37,9 @@ export const DeviceList = (props: Props) => {
               {device.name}
               <span style={{ color: "#888888" }}> ({device.platform})</span>
             </text>
-          )
+          );
         }}
       </For>
     </box>
-  )
-}
+  );
+};
