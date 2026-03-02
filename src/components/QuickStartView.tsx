@@ -4,7 +4,11 @@ import type { ProjectConfig } from "../types/project";
 import { CreateProjectModal } from "./CreateProjectModal";
 import { ProjectListItem } from "./ProjectListItem";
 
-export function QuickStartView() {
+interface QuickStartViewProps {
+	onOpenProject: (projectId: string) => void;
+}
+
+export function QuickStartView({ onOpenProject }: QuickStartViewProps) {
 	const [projects, setProjects] = useState<ProjectConfig[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -160,7 +164,7 @@ export function QuickStartView() {
 							key={project.id}
 							project={project}
 							selected={selectedProjectId === project.id}
-							onSelect={() => setSelectedProjectId(project.id)}
+							onSelect={() => onOpenProject(project.id)}
 						/>
 					))}
 				</div>

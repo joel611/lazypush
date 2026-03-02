@@ -76,40 +76,17 @@ The application SHALL provide a modal dialog interface for users to create new F
 - **AND** no project files SHALL be created
 
 ### Requirement: Service Account File Validation
-The application SHALL validate Firebase service account JSON files to ensure they contain required fields and proper structure before accepting them.
+The application SHALL validate Firebase service account JSON files to ensure they contain required fields and proper structure before accepting them, and SHALL detect duplicate Firebase projects to prevent user confusion.
 
-#### Scenario: Basic JSON structure validation on file selection
-- **WHEN** user selects a file
-- **THEN** the application SHALL verify the file contains valid JSON syntax
-- **AND** if invalid, SHALL display error "Invalid JSON file format"
-- **AND** if valid, SHALL proceed to extract metadata
-- **AND** validation SHALL complete within 500ms for files up to 10KB
-
-#### Scenario: Comprehensive validation on save
-- **WHEN** user clicks Save button
-- **THEN** the application SHALL verify all required Firebase service account fields exist:
-  - `type` (must equal "service_account")
-  - `project_id`
-  - `private_key_id`
-  - `private_key`
-  - `client_email`
-  - `client_id`
-  - `auth_uri`
-  - `token_uri`
-- **AND** if any required field is missing, SHALL display error "Invalid Firebase service account: missing [field_name]"
-- **AND** if `type` is not "service_account", SHALL display error "File is not a Firebase service account"
-
-#### Scenario: Duplicate project prevention
-- **WHEN** user attempts to save a project
-- **THEN** the application SHALL check if a project with the same name already exists
-- **AND** if duplicate exists, SHALL display error "Project name already exists"
-- **AND** SHALL prevent saving until user provides a unique name
-
-#### Scenario: File size limit validation
-- **WHEN** user selects a file
-- **THEN** the application SHALL verify the file size is under 100KB
-- **AND** if oversized, SHALL display error "File too large (max 100KB)"
-- **AND** SHALL prevent further processing of the file
+#### Scenario: Duplicate Firebase project warning
+- **WHEN** user selects a service account JSON file during project creation
+- **THEN** the application SHALL extract the `project_id` field from the JSON
+- **AND** SHALL check if any existing project uses the same Firebase `project_id`
+- **AND** if a duplicate is found, SHALL display a warning modal with message "Firebase project '[project_id]' is already used by project '[existing_project_name]'. Creating this project will result in multiple projects using the same Firebase credentials. Do you want to continue?"
+- **AND** SHALL provide "Cancel" button to abort project creation and "Create Anyway" button to proceed
+- **AND** if user clicks "Cancel", SHALL close the modal and keep the create project form open
+- **AND** if user clicks "Create Anyway", SHALL proceed with project creation as normal
+- **AND** if no duplicate is found, SHALL proceed with validation without showing warning
 
 ### Requirement: Project Data Storage
 The application SHALL create a structured directory for each project and store the service account file and project configuration in the local file system.

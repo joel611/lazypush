@@ -1,13 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {
 	CreateProjectResult,
 	ProjectConfig,
 	ProjectFormData,
 	ServiceAccountValidation,
 } from "../types/project";
+import { DuplicateWarningModal } from "./DuplicateWarningModal";
 
 interface CreateProjectModalProps {
 	open: boolean;
@@ -31,6 +32,8 @@ export function CreateProjectModal({
 	const [creating, setCreating] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [isDragging, setIsDragging] = useState(false);
+	const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+	const [ignoreDuplicate, setIgnoreDuplicate] = useState(false);
 
 	// Reset form when modal closes
 	useEffect(() => {
@@ -39,8 +42,59 @@ export function CreateProjectModal({
 			setValidation(null);
 			setError(null);
 			setIsDragging(false);
+			setShowDuplicateWarning(false);
+			setIgnoreDuplicate(false);
 		}
 	}, [open]);
+
+	// Handle ESC key to close modal
+	useEffect(() => {
+		if (!open) return;
+
+		function handleEscKey(e: KeyboardEvent) {
+			if (e.key === "Escape" && !creating && !showDuplicateWarning) {
+				onClose();
+			}
+		}
+
+		window.addEventListener("keydown", handleEscKey);
+		return () => window.removeEventListener("keydown", handleEscKey);
+	}, [open, creating, showDuplicateWarning, onClose]);
+
+	const validateFile = useCallback(async (filePath: string) => {
+		try {
+			setValidating(true);
+			setError(null);
+
+			const result = await invoke<ServiceAccountValidation>(
+				"validate_service_account",
+				{
+					filePath,
+				},
+			);
+
+			setValidation(result);
+
+			if (result.valid && result.projectId) {
+				// Auto-populate project name from project_id
+				setFormData((prev) => ({
+					...prev,
+					name: prev.name || result.projectId || "",
+					projectId: result.projectId || undefined,
+					clientEmail: result.clientEmail || undefined,
+				}));
+			} else if (result.error) {
+				setError(result.error);
+			}
+		} catch (err) {
+			setError(
+				`Validation failed: ${err instanceof Error ? err.message : String(err)}`,
+			);
+			setValidation(null);
+		} finally {
+			setValidating(false);
+		}
+	}, []);
 
 	// Setup drag-and-drop event listeners
 	useEffect(() => {
@@ -95,42 +149,7 @@ export function CreateProjectModal({
 			unlistenEnter?.();
 			unlistenLeave?.();
 		};
-	}, [open]);
-
-	async function validateFile(filePath: string) {
-		try {
-			setValidating(true);
-			setError(null);
-
-			const result = await invoke<ServiceAccountValidation>(
-				"validate_service_account",
-				{
-					filePath,
-				},
-			);
-
-			setValidation(result);
-
-			if (result.valid && result.projectId) {
-				// Auto-populate project name from project_id
-				setFormData((prev) => ({
-					...prev,
-					name: prev.name || result.projectId || "",
-					projectId: result.projectId || undefined,
-					clientEmail: result.clientEmail || undefined,
-				}));
-			} else if (result.error) {
-				setError(result.error);
-			}
-		} catch (err) {
-			setError(
-				`Validation failed: ${err instanceof Error ? err.message : String(err)}`,
-			);
-			setValidation(null);
-		} finally {
-			setValidating(false);
-		}
-	}
+	}, [open, validateFile]);
 
 	async function handleFileSelect() {
 		try {
@@ -192,6 +211,16 @@ export function CreateProjectModal({
 			return;
 		}
 
+		// Check for duplicate Firebase project and show warning if not already ignored
+		if (
+			!ignoreDuplicate &&
+			validation.duplicateProjectName &&
+			validation.projectId
+		) {
+			setShowDuplicateWarning(true);
+			return;
+		}
+
 		try {
 			setCreating(true);
 			setError(null);
@@ -218,6 +247,22 @@ export function CreateProjectModal({
 			);
 		} finally {
 			setCreating(false);
+		}
+	}
+
+	function handleDuplicateCancel() {
+		setShowDuplicateWarning(false);
+	}
+
+	function handleDuplicateConfirm() {
+		setShowDuplicateWarning(false);
+		setIgnoreDuplicate(true);
+		// Trigger form submission programmatically
+		const form = document.querySelector("form");
+		if (form) {
+			form.dispatchEvent(
+				new Event("submit", { bubbles: true, cancelable: true }),
+			);
 		}
 	}
 
@@ -463,6 +508,17 @@ export function CreateProjectModal({
 					</div>
 				</form>
 			</div>
+
+			{/* Duplicate Warning Modal */}
+			{validation?.projectId && validation?.duplicateProjectName && (
+				<DuplicateWarningModal
+					open={showDuplicateWarning}
+					projectId={validation.projectId}
+					duplicateProjectName={validation.duplicateProjectName}
+					onCancel={handleDuplicateCancel}
+					onConfirm={handleDuplicateConfirm}
+				/>
+			)}
 		</div>
 	);
 }

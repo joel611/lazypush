@@ -37,6 +37,7 @@ pub struct ValidationResult {
     pub project_id: Option<String>,
     pub client_email: Option<String>,
     pub error: Option<String>,
+    pub duplicate_project_name: Option<String>,
 }
 
 /// Result of project creation operation
@@ -76,8 +77,8 @@ fn extract_project_metadata(service_account: &ServiceAccountJson) -> (String, St
     )
 }
 
-/// Validates service account file with basic checks
-pub fn validate_service_account_file(file_path: &str) -> ValidationResult {
+/// Validates service account file with basic checks and duplicate detection
+pub fn validate_service_account_file(base_path: &Path, file_path: &str) -> ValidationResult {
     // Check file size (max 100KB = 102400 bytes)
     let metadata = match fs::metadata(file_path) {
         Ok(m) => m,
@@ -87,6 +88,7 @@ pub fn validate_service_account_file(file_path: &str) -> ValidationResult {
                 project_id: None,
                 client_email: None,
                 error: Some(format!("File not found: {}", e)),
+                duplicate_project_name: None,
             }
         }
     };
@@ -97,6 +99,7 @@ pub fn validate_service_account_file(file_path: &str) -> ValidationResult {
             project_id: None,
             client_email: None,
             error: Some("File too large (max 100KB)".to_string()),
+            duplicate_project_name: None,
         };
     }
 
@@ -109,6 +112,7 @@ pub fn validate_service_account_file(file_path: &str) -> ValidationResult {
                 project_id: None,
                 client_email: None,
                 error: Some(format!("Unable to read file: {}", e)),
+                duplicate_project_name: None,
             }
         }
     };
@@ -122,6 +126,7 @@ pub fn validate_service_account_file(file_path: &str) -> ValidationResult {
                 project_id: None,
                 client_email: None,
                 error: Some(e),
+                duplicate_project_name: None,
             }
         }
     };
@@ -133,6 +138,7 @@ pub fn validate_service_account_file(file_path: &str) -> ValidationResult {
             project_id: None,
             client_email: None,
             error: Some(e),
+            duplicate_project_name: None,
         };
     }
 
@@ -143,17 +149,22 @@ pub fn validate_service_account_file(file_path: &str) -> ValidationResult {
             project_id: None,
             client_email: None,
             error: Some(e),
+            duplicate_project_name: None,
         };
     }
 
     // Extract metadata
     let (project_id, client_email) = extract_project_metadata(&service_account);
 
+    // Check for duplicate Firebase project ID
+    let duplicate_project_name = check_firebase_project_id_exists(base_path, &project_id);
+
     ValidationResult {
         valid: true,
         project_id: Some(project_id),
         client_email: Some(client_email),
         error: None,
+        duplicate_project_name,
     }
 }
 
@@ -393,4 +404,24 @@ pub fn load_all_projects(base_path: &Path) -> Result<Vec<ProjectConfig>, String>
     projects.sort_by(|a, b| b.created_at.cmp(&a.created_at));
 
     Ok(projects)
+}
+
+/// Checks if a Firebase project_id already exists in any project
+/// Returns the project name if duplicate found, None if unique
+pub fn check_firebase_project_id_exists(
+    base_path: &Path,
+    firebase_project_id: &str,
+) -> Option<String> {
+    let projects = match load_all_projects(base_path) {
+        Ok(p) => p,
+        Err(_) => return None,
+    };
+
+    for project in projects {
+        if project.project_id == firebase_project_id {
+            return Some(project.name);
+        }
+    }
+
+    None
 }

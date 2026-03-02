@@ -6,6 +6,7 @@ export interface ServiceAccountValidation {
 	projectId: string | null;
 	clientEmail: string | null;
 	error: string | null;
+	duplicateProjectName: string | null;
 }
 
 /**
