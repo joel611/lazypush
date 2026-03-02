@@ -4,11 +4,25 @@
   "type": "module",
   "scripts": {
     "dev": "bun run src/index.tsx",
-    "test": "bun test"
+    "test": "bun test",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "@opentui/solid": "latest",
     "firebase-admin": "^13",
     "solid-js": "^1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.1",
+    "ultracite": "7.2.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+      "bun x ultracite fix"
+    ]
   }
 }
