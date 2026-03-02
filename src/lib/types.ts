@@ -1,6 +1,12 @@
 export interface Project {
   id: string
   name: string
+  createdAt: string
+}
+
+export interface Environment {
+  id: string
+  name: string
   serviceAccountPath: string
   createdAt: string
 }
@@ -34,6 +40,23 @@ export interface FcmMessage {
   }
 }
 
+export interface MessageTemplate {
+  id: string
+  name: string
+  message: FcmMessage
+  createdAt: string
+}
+
+export type SendTargetType = "devices" | "topic" | "all"
+
+export interface SendLogEntry {
+  timestamp: string
+  templateName?: string
+  targetType: SendTargetType
+  targetInfo: string   // comma-joined device names, topic string, or "all"
+  results: SendResult[]
+}
+
 export interface SendResult {
   deviceName: string
   token: string
@@ -44,6 +67,8 @@ export interface SendResult {
 export type ModalState =
   | { type: "none" }
   | { type: "project"; project?: Project }
+  | { type: "environment"; environment?: Environment }
+  | { type: "template"; template?: MessageTemplate }
   | { type: "device"; device?: Device }
   | { type: "message" }
-  | { type: "result"; results: SendResult[] }
+  | { type: "send" }
