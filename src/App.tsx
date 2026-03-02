@@ -48,13 +48,6 @@ export const App = () => {
 
     if (key.name === "q") process.exit(0)
 
-    // Tab cycles through panels
-    if (key.name === "tab") {
-      const idx = FOCUS_ORDER.indexOf(focused() as any)
-      setFocused(FOCUS_ORDER[(idx + 1) % FOCUS_ORDER.length])
-      return
-    }
-
     // Global: compose one-off message
     if (key.name === "m") { setModal({ type: "message" }); return }
 

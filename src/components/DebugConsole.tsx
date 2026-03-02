@@ -21,7 +21,7 @@ export const DebugConsole = (props: Props) => {
       }}
     >
       <text style={{ color: "#FFFFFF", bold: true }}>
-        <span style={{ color: "#00FFFF" }}>5</span> Debug Console
+        <span style={{ color: "#FFFF00" }}>5</span> Debug Console
       </text>
       <For each={sendLog().slice(consoleOffset())}>
         {(entry) => {

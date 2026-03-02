@@ -21,7 +21,7 @@ export const ProjectList = (props: Props) => {
       }}
     >
       <text style={{ color: "#FFFFFF", bold: true }}>
-        <span style={{ color: "#00FFFF" }}>3</span> Projects
+        <span style={{ color: "#FFFF00" }}>3</span> Projects
       </text>
       <For each={projects()}>
         {(project, i) => (

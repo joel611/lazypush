@@ -21,7 +21,7 @@ export const EnvironmentList = (props: Props) => {
       }}
     >
       <text style={{ color: "#FFFFFF", bold: true }}>
-        <span style={{ color: "#00FFFF" }}>2</span> Environments
+        <span style={{ color: "#FFFF00" }}>2</span> Environments
       </text>
       <For each={environments()}>
         {(env, i) => (

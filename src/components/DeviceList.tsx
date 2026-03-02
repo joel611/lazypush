@@ -20,7 +20,7 @@ export const DeviceList = (props: Props) => {
       }}
     >
       <text style={{ color: "#FFFFFF", bold: true }}>
-        <span style={{ color: "#00FFFF" }}>4</span> Devices
+        <span style={{ color: "#FFFF00" }}>4</span> Devices
       </text>
       <For each={devices()}>
         {(device, i) => {
