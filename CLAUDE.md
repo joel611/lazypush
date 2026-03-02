@@ -23,46 +23,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FCM Push Notification Tester is a cross-platform **desktop application** built with Tauri for testing Firebase Cloud Messaging push notifications. It helps backend and mobile developers quickly test notifications across multiple Firebase projects and devices through an intuitive GUI.
+**lazypush** is a Bun-native terminal UI (TUI) tool for testing Firebase Cloud Messaging (FCM) push notifications. Uses `@opentui/solid` (SolidJS reconciler for OpenTUI).
 
-**Target Architecture:**
-- **Frontend**: React 18+ with shadcn/ui components and Tailwind CSS
-- **Desktop Framework**: Tauri v2.x (Rust backend + web frontend)
-- **Data Storage**: File-based JSON (no database)
-- **Build Tool**: Vite
-
-**Current State:**
-- `index.mjs`: Legacy CLI script (to be migrated) - single file that sends FCM notifications
-- Tauri application not yet implemented (see roadmap in README.md)
+**Tech Stack:**
+- **Runtime**: Bun
+- **TUI**: @opentui/solid (SolidJS)
+- **Firebase**: firebase-admin (npm)
+- **Config**: `~/.config/lazypush/` (JSON files)
 
 ## Development Commands
 
-### Legacy CLI Script (Current)
 ```bash
-# Run the legacy notification sender
-node index.mjs
-```
-
-### Tauri Desktop App (Future)
-```bash
-# Install dependencies
-npm install
-
-# Development mode with hot reload
-npm run tauri dev
-
-# Build production application
-npm run tauri build
-
-# Lint and format with Biome
-biome check src/
-biome format --write src/
-
-# Format Rust code
-cd src-tauri && cargo fmt
-
-# Lint Rust code
-cd src-tauri && cargo clippy
+bun run src/index.tsx   # Run the TUI
+bun test                # Run unit tests
 ```
 
 ## High-Level Architecture
