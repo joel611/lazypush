@@ -12,7 +12,8 @@
       "Bash(pnpm biome check:*)",
       "Bash(cargo build:*)",
       "Bash(openspec proposal:*)",
-      "WebFetch(domain:opentui.com)"
+      "WebFetch(domain:opentui.com)",
+      "Bash(git:*)"
     ],
     "deny": [],
     "ask": []
