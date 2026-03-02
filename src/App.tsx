@@ -3,50 +3,70 @@ import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import {
   focused, setFocused,
   projects, projectIndex, setProjectIndex, selectedProject,
+  environments, environmentIndex, setEnvironmentIndex, selectedEnvironment,
+  templates, templateIndex, setTemplateIndex, selectedTemplate,
   devices, deviceIndex, setDeviceIndex,
   toggleDevice, selectedDeviceIds,
   modal, setModal,
-  message,
-  loadProjects, loadDevicesForProject,
+  consoleOffset, setConsoleOffset, sendLog,
+  loadProjects, loadEnvironmentsForProject, loadDevicesForEnvironment, loadTemplatesForProject,
 } from "./store"
 import { ProjectList } from "./components/ProjectList"
+import { EnvironmentList } from "./components/EnvironmentList"
+import { TemplateList } from "./components/TemplateList"
 import { DeviceList } from "./components/DeviceList"
+import { DebugConsole } from "./components/DebugConsole"
 import { StatusBar } from "./components/StatusBar"
 import { ProjectModal } from "./components/modals/ProjectModal"
+import { EnvironmentModal } from "./components/modals/EnvironmentModal"
+import { TemplateModal } from "./components/modals/TemplateModal"
 import { DeviceModal } from "./components/modals/DeviceModal"
 import { MessageModal } from "./components/modals/MessageModal"
-import { ResultModal } from "./components/modals/ResultModal"
-import { deleteProject, listDevices, saveDevices } from "./lib/config"
-import { sendNotification } from "./lib/fcm"
+import { SendModal } from "./components/modals/SendModal"
+import { deleteProject, deleteEnvironment, saveDevices, saveTemplates } from "./lib/config"
+
+const FOCUS_ORDER = ["projects", "environments", "templates", "devices", "console"] as const
 
 export const App = () => {
   const dims = useTerminalDimensions()
-
-  // Load data on mount
   loadProjects()
 
   useKeyboard((key) => {
-    // Block all navigation when a modal is open
     if (modal().type !== "none") return
 
     if (key.name === "q") process.exit(0)
 
+    // Tab cycles through panels
     if (key.name === "tab") {
-      setFocused(f => f === "projects" ? "devices" : "projects")
+      const idx = FOCUS_ORDER.indexOf(focused() as any)
+      setFocused(FOCUS_ORDER[(idx + 1) % FOCUS_ORDER.length])
       return
     }
 
-    // Project panel navigation
+    // Global: compose one-off message
+    if (key.name === "m") { setModal({ type: "message" }); return }
+
+    // Global: open send modal
+    if (key.name === "s" || key.name === "return") {
+      const env = selectedEnvironment()
+      if (!env) return
+      setModal({ type: "send" })
+      return
+    }
+
+    // ── Projects panel ──────────────────────────────────────────────────────
     if (focused() === "projects") {
       if (key.name === "up") {
-        setProjectIndex(i => Math.max(0, i - 1))
-        const proj = projects()[Math.max(0, projectIndex() - 1)]
-        if (proj) loadDevicesForProject(proj.id)
+        const next = Math.max(0, projectIndex() - 1)
+        setProjectIndex(next)
+        const proj = projects()[next]
+        if (proj) loadEnvironmentsForProject(proj.id)
       }
       if (key.name === "down") {
-        setProjectIndex(i => Math.min(projects().length - 1, i + 1))
-        const proj = projects()[Math.min(projects().length - 1, projectIndex() + 1)]
-        if (proj) loadDevicesForProject(proj.id)
+        const next = Math.min(projects().length - 1, projectIndex() + 1)
+        setProjectIndex(next)
+        const proj = projects()[next]
+        if (proj) loadEnvironmentsForProject(proj.id)
       }
       if (key.name === "n") setModal({ type: "project" })
       if (key.name === "e" && selectedProject()) setModal({ type: "project", project: selectedProject()! })
@@ -56,7 +76,44 @@ export const App = () => {
       }
     }
 
-    // Device panel navigation
+    // ── Environments panel ──────────────────────────────────────────────────
+    if (focused() === "environments") {
+      if (key.name === "up") {
+        const next = Math.max(0, environmentIndex() - 1)
+        setEnvironmentIndex(next)
+        const proj = selectedProject()
+        const env = environments()[next]
+        if (proj && env) loadDevicesForEnvironment(proj.id, env.id)
+      }
+      if (key.name === "down") {
+        const next = Math.min(environments().length - 1, environmentIndex() + 1)
+        setEnvironmentIndex(next)
+        const proj = selectedProject()
+        const env = environments()[next]
+        if (proj && env) loadDevicesForEnvironment(proj.id, env.id)
+      }
+      if (key.name === "n" && selectedProject()) setModal({ type: "environment" })
+      if (key.name === "e" && selectedEnvironment()) setModal({ type: "environment", environment: selectedEnvironment()! })
+      if (key.name === "D" && selectedProject() && selectedEnvironment()) {
+        deleteEnvironment(selectedProject()!.id, selectedEnvironment()!.id)
+        loadEnvironmentsForProject(selectedProject()!.id)
+      }
+    }
+
+    // ── Templates panel ─────────────────────────────────────────────────────
+    if (focused() === "templates") {
+      if (key.name === "up") setTemplateIndex(i => Math.max(0, i - 1))
+      if (key.name === "down") setTemplateIndex(i => Math.min(templates().length - 1, i + 1))
+      if (key.name === "n" && selectedProject()) setModal({ type: "template" })
+      if (key.name === "e" && selectedTemplate()) setModal({ type: "template", template: selectedTemplate()! })
+      if (key.name === "D" && selectedProject() && selectedTemplate()) {
+        const updated = templates().filter(t => t.id !== selectedTemplate()!.id)
+        saveTemplates(selectedProject()!.id, updated)
+        loadTemplatesForProject(selectedProject()!.id)
+      }
+    }
+
+    // ── Devices panel ───────────────────────────────────────────────────────
     if (focused() === "devices") {
       if (key.name === "up") setDeviceIndex(i => Math.max(0, i - 1))
       if (key.name === "down") setDeviceIndex(i => Math.min(devices().length - 1, i + 1))
@@ -64,48 +121,63 @@ export const App = () => {
         const dev = devices()[deviceIndex()]
         if (dev) toggleDevice(dev.id)
       }
-      if (key.name === "a" && selectedProject()) setModal({ type: "device" })
+      if (key.name === "a" && selectedProject() && selectedEnvironment()) setModal({ type: "device" })
       if (key.name === "e") {
         const dev = devices()[deviceIndex()]
         if (dev) setModal({ type: "device", device: dev })
       }
       if (key.name === "D") {
         const proj = selectedProject()
-        if (!proj) return
+        const env = selectedEnvironment()
+        if (!proj || !env) return
         const dev = devices()[deviceIndex()]
         if (!dev) return
         const updated = devices().filter(d => d.id !== dev.id)
-        saveDevices(proj.id, updated)
-        loadDevicesForProject(proj.id)
+        saveDevices(proj.id, env.id, updated)
+        loadDevicesForEnvironment(proj.id, env.id)
       }
     }
 
-    // Global
-    if (key.name === "m") setModal({ type: "message" })
-
-    if (key.name === "s" || key.name === "return") {
-      const proj = selectedProject()
-      if (!proj) return
-      const targets = devices().filter(d => selectedDeviceIds().has(d.id))
-      if (targets.length === 0) return
-      sendNotification(proj.serviceAccountPath, targets, message)
-        .then(results => setModal({ type: "result", results }))
-        .catch(err => setModal({ type: "result", results: [{ deviceName: "Error", token: "", success: false, error: String(err) }] }))
+    // ── Console panel ───────────────────────────────────────────────────────
+    if (focused() === "console") {
+      if (key.name === "up") setConsoleOffset(o => Math.max(0, o - 1))
+      if (key.name === "down") setConsoleOffset(o => Math.min(sendLog().length - 1, o + 1))
     }
   })
 
-  const projectPanelWidth = Math.floor((dims().width ?? 80) * 0.35)
+  const W = () => dims().width ?? 80
+  const H = () => dims().height ?? 24
+  const leftW = () => Math.floor(W() * 0.35)
+  const leftH = () => H() - 3  // minus status bar
+  const panelH = () => Math.floor(leftH() / 3)
+  const devicesH = () => Math.floor(leftH() * 0.6)
+  const consoleH = () => leftH() - devicesH()
 
   return (
     <box style={{ flexDirection: "column", width: "100%", height: "100%" }}>
       <box style={{ flexDirection: "row", flexGrow: 1 }}>
-        <ProjectList width={projectPanelWidth} />
-        <DeviceList />
+        {/* Left column */}
+        <box style={{ width: leftW(), flexDirection: "column" }}>
+          <TemplateList width={leftW()} height={panelH()} />
+          <EnvironmentList width={leftW()} height={panelH()} />
+          <ProjectList width={leftW()} height={panelH()} />
+        </box>
+        {/* Right column */}
+        <box style={{ flexGrow: 1, flexDirection: "column" }}>
+          <DeviceList height={devicesH()} />
+          <DebugConsole height={consoleH()} />
+        </box>
       </box>
       <StatusBar />
 
       <Show when={modal().type === "project"}>
         <ProjectModal project={(modal() as any).project} />
+      </Show>
+      <Show when={modal().type === "environment"}>
+        <EnvironmentModal environment={(modal() as any).environment} />
+      </Show>
+      <Show when={modal().type === "template"}>
+        <TemplateModal template={(modal() as any).template} />
       </Show>
       <Show when={modal().type === "device"}>
         <DeviceModal device={(modal() as any).device} />
@@ -113,8 +185,8 @@ export const App = () => {
       <Show when={modal().type === "message"}>
         <MessageModal />
       </Show>
-      <Show when={modal().type === "result"}>
-        <ResultModal results={(modal() as any).results} />
+      <Show when={modal().type === "send"}>
+        <SendModal />
       </Show>
     </box>
   )
