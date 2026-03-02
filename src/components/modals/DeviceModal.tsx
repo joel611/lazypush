@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js"
 import { useKeyboard } from "@opentui/solid"
-import { setModal, loadDevicesForProject, selectedProject } from "../../store"
+import { setModal, loadDevicesForEnvironment, selectedProject, selectedEnvironment } from "../../store"
 import { listDevices, saveDevices } from "../../lib/config"
 import type { Device } from "../../lib/types"
 import { randomUUID } from "crypto"
@@ -25,7 +25,8 @@ export const DeviceModal = (props: Props) => {
     if (!name().trim()) { setError("Name is required"); return }
     if (!token().trim()) { setError("Token is required"); return }
     const project = selectedProject()
-    if (!project) return
+    const env = selectedEnvironment()
+    if (!project || !env) return
     const device: Device = {
       id: props.device?.id ?? randomUUID(),
       name: name().trim(),
@@ -33,12 +34,12 @@ export const DeviceModal = (props: Props) => {
       token: token().trim(),
       createdAt: props.device?.createdAt ?? new Date().toISOString(),
     }
-    const existing = listDevices(project.id)
+    const existing = listDevices(project.id, env.id)
     const updated = isEdit
       ? existing.map(d => d.id === device.id ? device : d)
       : [...existing, device]
-    saveDevices(project.id, updated)
-    loadDevicesForProject(project.id)
+    saveDevices(project.id, env.id, updated)
+    loadDevicesForEnvironment(project.id, env.id)
     setModal({ type: "none" })
   }
 
