@@ -27,12 +27,24 @@ import { deleteProject, deleteEnvironment, saveDevices, saveTemplates } from "./
 
 const FOCUS_ORDER = ["projects", "environments", "templates", "devices", "console"] as const
 
+const PANE_KEYS: Partial<Record<string, typeof FOCUS_ORDER[number]>> = {
+  "1": "templates",
+  "2": "environments",
+  "3": "projects",
+  "4": "devices",
+  "5": "console",
+}
+
 export const App = () => {
   const dims = useTerminalDimensions()
   loadProjects()
 
   useKeyboard((key) => {
     if (modal().type !== "none") return
+
+    // Number keys jump to pane
+    const pane = PANE_KEYS[key.name]
+    if (pane) { setFocused(pane); return }
 
     if (key.name === "q") process.exit(0)
 
@@ -54,15 +66,18 @@ export const App = () => {
       return
     }
 
+    // nvim movement aliases
+    const nav = key.name === "j" ? "down" : key.name === "k" ? "up" : key.name
+
     // ── Projects panel ──────────────────────────────────────────────────────
     if (focused() === "projects") {
-      if (key.name === "up") {
+      if (nav === "up") {
         const next = Math.max(0, projectIndex() - 1)
         setProjectIndex(next)
         const proj = projects()[next]
         if (proj) loadEnvironmentsForProject(proj.id)
       }
-      if (key.name === "down") {
+      if (nav === "down") {
         const next = Math.min(projects().length - 1, projectIndex() + 1)
         setProjectIndex(next)
         const proj = projects()[next]
@@ -78,14 +93,14 @@ export const App = () => {
 
     // ── Environments panel ──────────────────────────────────────────────────
     if (focused() === "environments") {
-      if (key.name === "up") {
+      if (nav === "up") {
         const next = Math.max(0, environmentIndex() - 1)
         setEnvironmentIndex(next)
         const proj = selectedProject()
         const env = environments()[next]
         if (proj && env) loadDevicesForEnvironment(proj.id, env.id)
       }
-      if (key.name === "down") {
+      if (nav === "down") {
         const next = Math.min(environments().length - 1, environmentIndex() + 1)
         setEnvironmentIndex(next)
         const proj = selectedProject()
@@ -102,8 +117,8 @@ export const App = () => {
 
     // ── Templates panel ─────────────────────────────────────────────────────
     if (focused() === "templates") {
-      if (key.name === "up") setTemplateIndex(i => Math.max(0, i - 1))
-      if (key.name === "down") setTemplateIndex(i => Math.min(templates().length - 1, i + 1))
+      if (nav === "up") setTemplateIndex(i => Math.max(0, i - 1))
+      if (nav === "down") setTemplateIndex(i => Math.min(templates().length - 1, i + 1))
       if (key.name === "n" && selectedProject()) setModal({ type: "template" })
       if (key.name === "e" && selectedTemplate()) setModal({ type: "template", template: selectedTemplate()! })
       if (key.name === "D" && selectedProject() && selectedTemplate()) {
@@ -115,8 +130,8 @@ export const App = () => {
 
     // ── Devices panel ───────────────────────────────────────────────────────
     if (focused() === "devices") {
-      if (key.name === "up") setDeviceIndex(i => Math.max(0, i - 1))
-      if (key.name === "down") setDeviceIndex(i => Math.min(devices().length - 1, i + 1))
+      if (nav === "up") setDeviceIndex(i => Math.max(0, i - 1))
+      if (nav === "down") setDeviceIndex(i => Math.min(devices().length - 1, i + 1))
       if (key.name === "space") {
         const dev = devices()[deviceIndex()]
         if (dev) toggleDevice(dev.id)
@@ -140,8 +155,8 @@ export const App = () => {
 
     // ── Console panel ───────────────────────────────────────────────────────
     if (focused() === "console") {
-      if (key.name === "up") setConsoleOffset(o => Math.max(0, o - 1))
-      if (key.name === "down") setConsoleOffset(o => Math.min(sendLog().length - 1, o + 1))
+      if (nav === "up") setConsoleOffset(o => Math.max(0, o - 1))
+      if (nav === "down") setConsoleOffset(o => Math.min(sendLog().length - 1, o + 1))
     }
   })
 
