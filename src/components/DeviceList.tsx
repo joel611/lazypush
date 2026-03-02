@@ -1,14 +1,18 @@
 import { For } from "solid-js"
 import { devices, deviceIndex, selectedDeviceIds, focused } from "../store"
 
-export const DeviceList = () => {
+interface Props {
+  height: number
+}
+
+export const DeviceList = (props: Props) => {
   const isFocused = () => focused() === "devices"
 
   return (
     <box
       style={{
         flexGrow: 1,
-        height: "100%",
+        height: props.height,
         flexDirection: "column",
         borderStyle: "single",
         borderColor: isFocused() ? "#00FFFF" : "#666666",

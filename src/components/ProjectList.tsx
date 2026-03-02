@@ -3,6 +3,7 @@ import { projects, projectIndex, focused } from "../store"
 
 interface Props {
   width: number
+  height: number
 }
 
 export const ProjectList = (props: Props) => {
@@ -12,7 +13,7 @@ export const ProjectList = (props: Props) => {
     <box
       style={{
         width: props.width,
-        height: "100%",
+        height: props.height,
         flexDirection: "column",
         borderStyle: "single",
         borderColor: isFocused() ? "#00FFFF" : "#666666",
