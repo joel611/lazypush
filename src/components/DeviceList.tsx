@@ -19,7 +19,9 @@ export const DeviceList = (props: Props) => {
         padding: 1,
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>Devices</text>
+      <text style={{ color: "#FFFFFF", bold: true }}>
+        <span style={{ color: "#00FFFF" }}>4</span> Devices
+      </text>
       <For each={devices()}>
         {(device, i) => {
           const isSelected = () => selectedDeviceIds().has(device.id)

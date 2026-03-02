@@ -20,7 +20,9 @@ export const ProjectList = (props: Props) => {
         padding: 1,
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>Projects</text>
+      <text style={{ color: "#FFFFFF", bold: true }}>
+        <span style={{ color: "#00FFFF" }}>3</span> Projects
+      </text>
       <For each={projects()}>
         {(project, i) => (
           <text

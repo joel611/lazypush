@@ -20,7 +20,9 @@ export const DebugConsole = (props: Props) => {
         overflow: "hidden",
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>Debug Console</text>
+      <text style={{ color: "#FFFFFF", bold: true }}>
+        <span style={{ color: "#00FFFF" }}>5</span> Debug Console
+      </text>
       <For each={sendLog().slice(consoleOffset())}>
         {(entry) => {
           const ts = new Date(entry.timestamp).toLocaleTimeString()
