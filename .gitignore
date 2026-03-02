@@ -1,34 +1,8 @@
-settings.local.json
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+node_modules/
+*.json.bak
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Tauri
-src-tauri/target
-
-# Firebase service account files
-*firebase*.json
-
-# User data directory
-data/
+# Firebase service account files — NEVER commit these
+*-firebase-adminsdk-*.json
+*-adminsdk-*.json
+serviceAccount*.json
+service-account*.json

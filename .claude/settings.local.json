@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openspec list:*)",
+      "Bash(openspec validate:*)",
+      "Bash(openspec show:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm build:*)",
+      "Bash(openspec archive:*)",
+      "Bash(pnpm biome check:*)",
+      "Bash(cargo build:*)",
+      "Bash(openspec proposal:*)",
+      "WebFetch(domain:opentui.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
