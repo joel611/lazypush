@@ -27,17 +27,22 @@ A cross-platform desktop application for testing Firebase Cloud Messaging (FCM) 
 
 ## Technology Stack
 
-- **Framework**: [Tauri](https://tauri.app/) - Build smaller, faster, and more secure desktop applications
-- **Frontend**: HTML/CSS/JavaScript (or React/Vue/Svelte - to be determined)
-- **Backend**: Rust + Firebase Admin SDK
+- **Framework**: [Tauri](https://tauri.app/) v2.x - Build smaller, faster, and more secure desktop applications
+- **Frontend**: React 18+ with TypeScript
+- **UI Library**: Tailwind CSS for styling (shadcn/ui components ready to be added)
+- **Build Tool**: Vite
+- **Code Quality**: Biome for linting and formatting
+- **Package Manager**: pnpm
+- **Backend**: Rust + Firebase Admin SDK (to be integrated)
 - **Platform**: Cross-platform (Windows, macOS, Linux)
 
 ## Prerequisites
 
 - Node.js (v16 or higher)
+- pnpm (v8 or higher) - `npm install -g pnpm`
 - Rust (latest stable version)
-- Firebase project with Cloud Messaging enabled
-- Firebase service account JSON file(s)
+- Firebase project with Cloud Messaging enabled (for future features)
+- Firebase service account JSON file(s) (for future features)
 
 ## Installation
 
@@ -51,22 +56,38 @@ cd push-notification-tester
 
 2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 3. Run in development mode:
 ```bash
-npm run tauri dev
+pnpm tauri dev
 ```
 
 ### Building for Production
 
 Build the application for your platform:
 ```bash
-npm run tauri build
+pnpm tauri build
 ```
 
 The compiled application will be available in `src-tauri/target/release/`.
+
+### Code Quality
+
+Run linting and formatting:
+```bash
+pnpm check          # Check for linting and formatting issues
+pnpm format         # Auto-format code
+pnpm lint           # Run linter only
+```
+
+### TypeScript
+
+Build the TypeScript code:
+```bash
+pnpm build          # TypeScript compile + Vite build
+```
 
 ## Usage
 
