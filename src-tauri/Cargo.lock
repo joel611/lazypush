@@ -932,6 +932,7 @@ name = "fcm-tester"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "lazy_static",
  "serde",
  "serde_json",
  "tauri",

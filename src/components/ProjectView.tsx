@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import type { ProjectConfig } from "../types/project";
 import { DeviceList } from "./DeviceList";
 import { MessageList } from "./MessageList";
+import { SendPanel } from "./SendPanel";
 
 interface ProjectViewProps {
 	projectId: string;
 	onClose: () => void;
 }
 
-type TabType = "devices" | "messages";
+type TabType = "devices" | "messages" | "send";
 
 export function ProjectView({ projectId, onClose }: ProjectViewProps) {
 	const [project, setProject] = useState<ProjectConfig | null>(null);
@@ -106,6 +107,17 @@ export function ProjectView({ projectId, onClose }: ProjectViewProps) {
 						>
 							Messages
 						</button>
+						<button
+							type="button"
+							onClick={() => setActiveTab("send")}
+							className={`px-6 py-3 font-medium rounded-lg transition-all ${
+								activeTab === "send"
+									? "bg-green-600 text-white shadow-md"
+									: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+							}`}
+						>
+							Send
+						</button>
 					</div>
 				</div>
 			</div>
@@ -114,6 +126,7 @@ export function ProjectView({ projectId, onClose }: ProjectViewProps) {
 			<div className="max-w-7xl mx-auto px-6 py-8">
 				{activeTab === "devices" && <DeviceList projectId={projectId} />}
 				{activeTab === "messages" && <MessageList projectId={projectId} />}
+				{activeTab === "send" && <SendPanel projectId={projectId} />}
 			</div>
 		</div>
 	);
