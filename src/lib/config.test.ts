@@ -88,3 +88,54 @@ describe("config — devices (per env)", () => {
     expect(config.listDevices("p1", "e1")).toEqual([DEVICE])
   })
 })
+
+describe("config — templates", () => {
+  beforeEach(() => { rmSync(TEST_CONFIG_DIR, { recursive: true, force: true }); config.saveProject(PROJECT) })
+  afterEach(() => rmSync(TEST_CONFIG_DIR, { recursive: true, force: true }))
+
+  test("listTemplates returns [] for new project", () => {
+    expect(config.listTemplates("p1")).toEqual([])
+  })
+
+  test("saveTemplates + listTemplates round-trips", () => {
+    const tpl = {
+      id: "t1",
+      name: "Login push",
+      message: { notification: { title: "Hi", body: "Hello" } },
+      createdAt: "2026-01-01T00:00:00Z",
+    }
+    config.saveTemplates("p1", [tpl])
+    expect(config.listTemplates("p1")).toEqual([tpl])
+  })
+})
+
+describe("config — session logging", () => {
+  beforeEach(() => {
+    rmSync(TEST_CONFIG_DIR, { recursive: true, force: true })
+    config.saveProject(PROJECT)
+    config.saveEnvironment("p1", ENV)
+  })
+  afterEach(() => rmSync(TEST_CONFIG_DIR, { recursive: true, force: true }))
+
+  test("appendSendLog creates file and accumulates entries", () => {
+    const entry1 = {
+      timestamp: "2026-01-01T14:00:00Z",
+      targetType: "devices" as const,
+      targetInfo: "iPhone",
+      results: [{ deviceName: "iPhone", token: "tok", success: true }],
+    }
+    const entry2 = { ...entry1, timestamp: "2026-01-01T14:01:00Z" }
+    const file = "2026-01-01_14-00-00.json"
+
+    config.appendSendLog("p1", "e1", file, entry1)
+    config.appendSendLog("p1", "e1", file, entry2)
+
+    const log = config.readSendLog("p1", "e1", file)
+    expect(log).toHaveLength(2)
+    expect(log[0].timestamp).toBe("2026-01-01T14:00:00Z")
+  })
+
+  test("newSessionFileName returns a filename matching pattern", () => {
+    expect(config.newSessionFileName()).toMatch(/^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.json$/)
+  })
+})
