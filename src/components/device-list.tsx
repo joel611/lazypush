@@ -19,8 +19,10 @@ export const DeviceList = (props: Props) => {
         padding: 1,
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        <span style={{ fg: "#FFFF00" }}>4</span> Devices
+      <text fg="#FFFFFF">
+        <strong>
+          <span style={{ fg: "#FFFF00" }}>4</span> Devices
+        </strong>
       </text>
       <For each={devices()}>
         {(device, i) => {

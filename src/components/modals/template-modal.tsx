@@ -63,7 +63,7 @@ export const TemplateModal = (props: Props) => {
         android: { priority: "high" },
         apns: {
           headers: { "apns-priority": "10" },
-          payload: { aps: { contentAvailable: 1, mutableContent: 1 } },
+          payload: { aps: { contentAvailable: true, mutableContent: true } },
         },
       },
       createdAt: props.template?.createdAt ?? new Date().toISOString(),
@@ -161,8 +161,8 @@ export const TemplateModal = (props: Props) => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        {isEdit ? "Edit Template" : "New Template"}
+      <text fg="#FFFFFF">
+        <strong>{isEdit ? "Edit Template" : "New Template"}</strong>
       </text>
       <text style={{ fg: "#888888", marginTop: 1 }}>Template Name</text>
       <box

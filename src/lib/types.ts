@@ -26,9 +26,9 @@ export interface FcmMessage {
   apns?: {
     headers?: Record<string, string>;
     payload?: {
-      aps?: {
-        contentAvailable?: number;
-        mutableContent?: number;
+      aps: {
+        contentAvailable?: boolean;
+        mutableContent?: boolean;
       };
     };
   };

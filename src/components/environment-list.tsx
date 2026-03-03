@@ -20,8 +20,10 @@ export const EnvironmentList = (props: Props) => {
         padding: 1,
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        <span style={{ fg: "#FFFF00" }}>2</span> Environments
+      <text fg="#FFFFFF">
+        <strong>
+          <span style={{ fg: "#FFFF00" }}>2</span> Environments
+        </strong>
       </text>
       <For each={environments()}>
         {(env, i) => (

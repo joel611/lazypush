@@ -59,7 +59,7 @@ export const [message, setMessage] = createStore<FcmMessage>({
   android: { priority: "high" },
   apns: {
     headers: { "apns-priority": "10" },
-    payload: { aps: { contentAvailable: 1, mutableContent: 1 } },
+    payload: { aps: { contentAvailable: true, mutableContent: true } },
   },
 });
 
@@ -85,7 +85,7 @@ export function loadProjects() {
   setEnvironments([]);
   setEnvironmentIndex(0);
   setDevices([]);
-  setSelectedDeviceIds(new Set());
+  setSelectedDeviceIds(new Set<string>());
   if (ps.length > 0) {
     loadEnvironmentsForProject(ps[0].id);
   }
@@ -96,7 +96,7 @@ export function loadEnvironmentsForProject(projectId: string) {
   setEnvironments(envs);
   setEnvironmentIndex(0);
   setDevices([]);
-  setSelectedDeviceIds(new Set());
+  setSelectedDeviceIds(new Set<string>());
   loadTemplatesForProject(projectId);
   if (envs.length > 0) {
     loadDevicesForEnvironment(projectId, envs[0].id);
@@ -111,7 +111,7 @@ export function loadTemplatesForProject(projectId: string) {
 export function loadDevicesForEnvironment(projectId: string, envId: string) {
   setDevices(listDevices(projectId, envId));
   setDeviceIndex(0);
-  setSelectedDeviceIds(new Set());
+  setSelectedDeviceIds(new Set<string>());
 }
 
 export function toggleDevice(id: string) {

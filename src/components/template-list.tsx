@@ -20,8 +20,10 @@ export const TemplateList = (props: Props) => {
         padding: 1,
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        <span style={{ fg: "#FFFF00" }}>1</span> Templates
+      <text fg="#FFFFFF">
+        <strong>
+          <span style={{ fg: "#FFFF00" }}>1</span> Templates
+        </strong>
       </text>
       <For each={templates()}>
         {(tpl, i) => (

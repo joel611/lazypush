@@ -121,7 +121,9 @@ export const MessageModal = () => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>Compose Message</text>
+      <text fg="#FFFFFF">
+        <strong>Compose Message</strong>
+      </text>
       <text style={{ fg: "#888888", marginTop: 1 }}>Title</text>
       <box
         style={{

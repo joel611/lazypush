@@ -120,8 +120,8 @@ export const DeviceModal = (props: Props) => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        {isEdit ? "Edit Device" : "Add Device"}
+      <text fg="#FFFFFF">
+        <strong>{isEdit ? "Edit Device" : "Add Device"}</strong>
       </text>
       <text style={{ fg: "#888888", marginTop: 1 }}>Name</text>
       <box

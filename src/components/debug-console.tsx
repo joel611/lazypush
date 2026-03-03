@@ -20,8 +20,10 @@ export const DebugConsole = (props: Props) => {
         overflow: "hidden",
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        <span style={{ fg: "#FFFF00" }}>5</span> Debug Console
+      <text fg="#FFFFFF">
+        <strong>
+          <span style={{ fg: "#FFFF00" }}>5</span> Debug Console
+        </strong>
       </text>
       <For each={sendLog().slice(consoleOffset())}>
         {(entry) => {

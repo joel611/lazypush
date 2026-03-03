@@ -59,8 +59,8 @@ export const ProjectModal = (props: Props) => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        {isEdit ? "Edit Project" : "New Project"}
+      <text fg="#FFFFFF">
+        <strong>{isEdit ? "Edit Project" : "New Project"}</strong>
       </text>
       <text style={{ fg: "#888888", marginTop: 1 }}>Name</text>
       <box

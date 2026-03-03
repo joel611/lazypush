@@ -2,7 +2,7 @@ import { useKeyboard } from "@opentui/solid";
 import { createSignal, Show } from "solid-js";
 import { appendSendLog } from "../../lib/config";
 import { sendNotification, sendToTopic } from "../../lib/fcm";
-import type { SendLogEntry, SendTargetType } from "../../lib/types";
+import type { SendLogEntry, SendResult, SendTargetType } from "../../lib/types";
 import {
   appendToSendLog,
   devices,
@@ -138,7 +138,9 @@ export const SendModal = () => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>Send As</text>
+      <text fg="#FFFFFF">
+        <strong>Send As</strong>
+      </text>
       <box style={{ backgroundColor: bg("devices"), padding: 1, marginTop: 1 }}>
         <text style={{ fg: highlight("devices") }}>
           {option() === "devices" ? "> " : "  "}Selected devices (

@@ -96,8 +96,8 @@ export const EnvironmentModal = (props: Props) => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ fg: "#FFFFFF", bold: true }}>
-        {isEdit ? "Edit Environment" : "New Environment"}
+      <text fg="#FFFFFF">
+        <strong>{isEdit ? "Edit Environment" : "New Environment"}</strong>
       </text>
       <text style={{ fg: "#888888", marginTop: 1 }}>
         Name (e.g. dev, uat, prod)

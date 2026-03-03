@@ -3,3 +3,5 @@ npm test
 # ultracite
 #!/bin/sh
 bun x lint-staged
+
+bun run typecheck
