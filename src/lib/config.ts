@@ -199,3 +199,22 @@ export function readSendLog(
   const path = join(ENV_DIR(projectId, envId), "sessions", sessionFile);
   return safeReadJson<SendLogEntry[]>(path) ?? [];
 }
+
+// ─── DiskConfigProvider ───────────────────────────────────────────────────────
+
+import type { ConfigProvider } from "./config-provider";
+
+export const DiskConfigProvider: ConfigProvider = {
+  listProjects,
+  saveProject,
+  deleteProject,
+  listEnvironments,
+  saveEnvironment,
+  deleteEnvironment,
+  listDevices,
+  saveDevices,
+  listTemplates,
+  saveTemplates,
+  appendSendLog,
+  newSessionFileName,
+};
