@@ -20,8 +20,8 @@ export const DebugConsole = (props: Props) => {
         overflow: "hidden",
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>
-        <span style={{ color: "#FFFF00" }}>5</span> Debug Console
+      <text style={{ fg: "#FFFFFF", bold: true }}>
+        <span style={{ fg: "#FFFF00" }}>5</span> Debug Console
       </text>
       <For each={sendLog().slice(consoleOffset())}>
         {(entry) => {
@@ -45,14 +45,14 @@ export const DebugConsole = (props: Props) => {
           return (
             <box style={{ flexDirection: "column", marginTop: 0 }}>
               <text>
-                <span style={{ color: "#888888" }}>{ts} </span>
-                <span style={{ color: iconColor }}>{icon} </span>
-                <span style={{ color: "#FFFFFF" }}>{label}</span>
-                <span style={{ color: "#888888" }}> → {target}</span>
+                <span style={{ fg: "#888888" }}>{ts} </span>
+                <span style={{ fg: iconColor }}>{icon} </span>
+                <span style={{ fg: "#FFFFFF" }}>{label}</span>
+                <span style={{ fg: "#888888" }}> → {target}</span>
               </text>
               <For each={entry.results.filter((r) => !r.success)}>
                 {(r) => (
-                  <text style={{ color: "#FF4444", marginLeft: 2 }}>
+                  <text style={{ fg: "#FF4444", marginLeft: 2 }}>
                     ERR {r.deviceName}: {r.error}
                   </text>
                 )}

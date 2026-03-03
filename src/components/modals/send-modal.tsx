@@ -138,15 +138,15 @@ export const SendModal = () => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>Send As</text>
+      <text style={{ fg: "#FFFFFF", bold: true }}>Send As</text>
       <box style={{ backgroundColor: bg("devices"), padding: 1, marginTop: 1 }}>
-        <text style={{ color: highlight("devices") }}>
+        <text style={{ fg: highlight("devices") }}>
           {option() === "devices" ? "> " : "  "}Selected devices (
           {selectedCount()} checked)
         </text>
       </box>
       <box style={{ backgroundColor: bg("topic"), padding: 1 }}>
-        <text style={{ color: highlight("topic") }}>
+        <text style={{ fg: highlight("topic") }}>
           {option() === "topic" ? "> " : "  "}Topic
         </text>
       </box>
@@ -154,19 +154,19 @@ export const SendModal = () => {
         <box
           style={{ borderStyle: "single", borderColor: "#00FF00", padding: 1 }}
         >
-          <text style={{ color: "#FFFFFF" }}>{topicStr() || " "}</text>
+          <text style={{ fg: "#FFFFFF" }}>{topicStr() || " "}</text>
         </box>
       </Show>
       <box style={{ backgroundColor: bg("all"), padding: 1 }}>
-        <text style={{ color: highlight("all") }}>
+        <text style={{ fg: highlight("all") }}>
           {option() === "all" ? "> " : "  "}All devices in env (
           {devices().length} total)
         </text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>
-        <span style={{ color: "#00FF00" }}>↑↓</span>:choose
-        <span style={{ color: "#00FF00" }}> enter</span>:send
-        <span style={{ color: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: "#888888", marginTop: 1 }}>
+        <span style={{ fg: "#00FF00" }}>↑↓</span>:choose
+        <span style={{ fg: "#00FF00" }}> enter</span>:send
+        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
       </text>
     </box>
   );

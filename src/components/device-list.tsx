@@ -19,8 +19,8 @@ export const DeviceList = (props: Props) => {
         padding: 1,
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>
-        <span style={{ color: "#FFFF00" }}>4</span> Devices
+      <text style={{ fg: "#FFFFFF", bold: true }}>
+        <span style={{ fg: "#FFFF00" }}>4</span> Devices
       </text>
       <For each={devices()}>
         {(device, i) => {
@@ -29,13 +29,13 @@ export const DeviceList = (props: Props) => {
           return (
             <text
               style={{
-                color: isCurrent() ? "#000000" : "#CCCCCC",
-                backgroundColor: isCurrent() ? "#00FFFF" : "transparent",
+                fg: isCurrent() ? "#000000" : "#CCCCCC",
+                bg: isCurrent() ? "#00FFFF" : "transparent",
               }}
             >
               {isSelected() ? "[x] " : "[ ] "}
               {device.name}
-              <span style={{ color: "#888888" }}> ({device.platform})</span>
+              <span style={{ fg: "#888888" }}> ({device.platform})</span>
             </text>
           );
         }}

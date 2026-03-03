@@ -59,19 +59,19 @@ export const ProjectModal = (props: Props) => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>
+      <text style={{ fg: "#FFFFFF", bold: true }}>
         {isEdit ? "Edit Project" : "New Project"}
       </text>
-      <text style={{ color: "#888888", marginTop: 1 }}>Name</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Name</text>
       <box
         style={{ borderStyle: "single", borderColor: "#00FFFF", padding: 1 }}
       >
-        <text style={{ color: "#FFFFFF" }}>{name() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{name() || " "}</text>
       </box>
-      <text style={{ color: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ color: "#888888", marginTop: 1 }}>
-        <span style={{ color: "#00FFFF" }}>enter</span>:save
-        <span style={{ color: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>
+        <span style={{ fg: "#00FFFF" }}>enter</span>:save
+        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
       </text>
     </box>
   );

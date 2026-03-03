@@ -20,16 +20,15 @@ export const TemplateList = (props: Props) => {
         padding: 1,
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>
-        <span style={{ color: "#FFFF00" }}>1</span> Templates
+      <text style={{ fg: "#FFFFFF", bold: true }}>
+        <span style={{ fg: "#FFFF00" }}>1</span> Templates
       </text>
       <For each={templates()}>
         {(tpl, i) => (
           <text
             style={{
-              color: i() === templateIndex() ? "#000000" : "#CCCCCC",
-              backgroundColor:
-                i() === templateIndex() ? "#FFAA00" : "transparent",
+              fg: i() === templateIndex() ? "#000000" : "#CCCCCC",
+              bg: i() === templateIndex() ? "#FFAA00" : "transparent",
             }}
           >
             {i() === templateIndex() ? "> " : "  "}

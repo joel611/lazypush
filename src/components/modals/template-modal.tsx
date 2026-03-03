@@ -161,10 +161,10 @@ export const TemplateModal = (props: Props) => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>
+      <text style={{ fg: "#FFFFFF", bold: true }}>
         {isEdit ? "Edit Template" : "New Template"}
       </text>
-      <text style={{ color: "#888888", marginTop: 1 }}>Template Name</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Template Name</text>
       <box
         style={{
           borderStyle: "single",
@@ -172,9 +172,9 @@ export const TemplateModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>{name() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{name() || " "}</text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>Notification Title</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Notification Title</text>
       <box
         style={{
           borderStyle: "single",
@@ -182,9 +182,9 @@ export const TemplateModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>{title() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{title() || " "}</text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>Notification Body</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Notification Body</text>
       <box
         style={{
           borderStyle: "single",
@@ -192,9 +192,9 @@ export const TemplateModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>{body() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{body() || " "}</text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>Data (JSON)</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Data (JSON)</text>
       <box
         style={{
           borderStyle: "single",
@@ -203,13 +203,13 @@ export const TemplateModal = (props: Props) => {
           height: 4,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>{dataStr() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{dataStr() || " "}</text>
       </box>
-      <text style={{ color: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ color: "#888888", marginTop: 1 }}>
-        <span style={{ color: "#FFAA00" }}>tab</span>:next
-        <span style={{ color: "#FFAA00" }}> ctrl+s</span>:save
-        <span style={{ color: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>
+        <span style={{ fg: "#FFAA00" }}>tab</span>:next
+        <span style={{ fg: "#FFAA00" }}> ctrl+s</span>:save
+        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
       </text>
     </box>
   );

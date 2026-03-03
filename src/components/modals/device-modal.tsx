@@ -120,10 +120,10 @@ export const DeviceModal = (props: Props) => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>
+      <text style={{ fg: "#FFFFFF", bold: true }}>
         {isEdit ? "Edit Device" : "Add Device"}
       </text>
-      <text style={{ color: "#888888", marginTop: 1 }}>Name</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Name</text>
       <box
         style={{
           borderStyle: "single",
@@ -131,9 +131,9 @@ export const DeviceModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>{name() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{name() || " "}</text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>Platform</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Platform</text>
       <box
         style={{
           borderStyle: "single",
@@ -141,17 +141,15 @@ export const DeviceModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ color: platform() === "ios" ? "#00FFFF" : "#888888" }}>
+        <text style={{ fg: platform() === "ios" ? "#00FFFF" : "#888888" }}>
           ios
         </text>
-        <text style={{ color: "#888888" }}> | </text>
-        <text
-          style={{ color: platform() === "android" ? "#00FFFF" : "#888888" }}
-        >
+        <text style={{ fg: "#888888" }}> | </text>
+        <text style={{ fg: platform() === "android" ? "#00FFFF" : "#888888" }}>
           android
         </text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>FCM Token</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>FCM Token</text>
       <box
         style={{
           borderStyle: "single",
@@ -159,14 +157,14 @@ export const DeviceModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>{token() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{token() || " "}</text>
       </box>
-      <text style={{ color: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ color: "#888888", marginTop: 1 }}>
-        <span style={{ color: "#00FFFF" }}>tab</span>:next
-        <span style={{ color: "#00FFFF" }}> ←→</span>:toggle platform
-        <span style={{ color: "#00FFFF" }}> enter</span>:confirm
-        <span style={{ color: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>
+        <span style={{ fg: "#00FFFF" }}>tab</span>:next
+        <span style={{ fg: "#00FFFF" }}> ←→</span>:toggle platform
+        <span style={{ fg: "#00FFFF" }}> enter</span>:confirm
+        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
       </text>
     </box>
   );

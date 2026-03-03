@@ -121,8 +121,8 @@ export const MessageModal = () => {
         backgroundColor: "#111111",
       }}
     >
-      <text style={{ color: "#FFFFFF", bold: true }}>Compose Message</text>
-      <text style={{ color: "#888888", marginTop: 1 }}>Title</text>
+      <text style={{ fg: "#FFFFFF", bold: true }}>Compose Message</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Title</text>
       <box
         style={{
           borderStyle: "single",
@@ -130,11 +130,11 @@ export const MessageModal = () => {
           padding: 1,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>
+        <text style={{ fg: "#FFFFFF" }}>
           {message.notification.title || " "}
         </text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>Body</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Body</text>
       <box
         style={{
           borderStyle: "single",
@@ -142,11 +142,11 @@ export const MessageModal = () => {
           padding: 1,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>
+        <text style={{ fg: "#FFFFFF" }}>
           {message.notification.body || " "}
         </text>
       </box>
-      <text style={{ color: "#888888", marginTop: 1 }}>Data (JSON)</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>Data (JSON)</text>
       <box
         style={{
           borderStyle: "single",
@@ -155,13 +155,13 @@ export const MessageModal = () => {
           height: 5,
         }}
       >
-        <text style={{ color: "#FFFFFF" }}>{dataStr() || " "}</text>
+        <text style={{ fg: "#FFFFFF" }}>{dataStr() || " "}</text>
       </box>
-      <text style={{ color: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ color: "#888888", marginTop: 1 }}>
-        <span style={{ color: "#00FFFF" }}>tab</span>:next field
-        <span style={{ color: "#00FFFF" }}> ctrl+s</span>:save
-        <span style={{ color: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: "#888888", marginTop: 1 }}>
+        <span style={{ fg: "#00FFFF" }}>tab</span>:next field
+        <span style={{ fg: "#00FFFF" }}> ctrl+s</span>:save
+        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
       </text>
     </box>
   );

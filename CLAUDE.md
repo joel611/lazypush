@@ -89,6 +89,13 @@ keyboard event → App.tsx handler → store.ts (state update)
 
 ## Code Conventions
 
+### OpenTUI Styling Rules (@opentui/solid)
+- `<text>` color: `style={{ fg: "#FFF" }}` — NOT `color:` (HTML CSS, ignored)
+- `<text>` background: `style={{ bg: "#000" }}` — NOT `backgroundColor:` (that's only for `<box>`)
+- `<span>` color: `style={{ fg: "#FFF" }}` — NOT `fg="#FFF"` (direct prop silently ignored by reconciler)
+- `<box>` background: `backgroundColor:` is correct — do NOT change to `bg:`
+- When debugging prop issues, check `setProperty()` in `node_modules/@opentui/solid/index.js`
+
 - **Runtime**: Bun — no transpile step; run and test with `bun` directly
 - **Reactivity**: SolidJS patterns — `createSignal`, `createStore`, `createMemo`; avoid mutable state outside the store
 - **Components**: PascalCase files in `src/components/`; functional components only
