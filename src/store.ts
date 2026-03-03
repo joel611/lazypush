@@ -1,12 +1,6 @@
 import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
-import {
-  listDevices,
-  listEnvironments,
-  listProjects,
-  listTemplates,
-  newSessionFileName,
-} from "./lib/config";
+import type { ConfigProvider } from "./lib/config-provider";
 import type {
   Device,
   Environment,
@@ -69,17 +63,17 @@ export const [consoleOffset, setConsoleOffset] = createSignal(0);
 
 // Session file (created once per run on first send)
 let _sessionFile: string | null = null;
-export function getOrCreateSessionFile(): string {
+export function getOrCreateSessionFile(config: ConfigProvider): string {
   if (!_sessionFile) {
-    _sessionFile = newSessionFileName();
+    _sessionFile = config.newSessionFileName();
   }
   return _sessionFile;
 }
 
 // ─── Load functions ───────────────────────────────────────────────────────────
 
-export function loadProjects() {
-  const ps = listProjects();
+export function loadProjects(config: ConfigProvider) {
+  const ps = config.listProjects();
   setProjects(ps);
   setProjectIndex(0);
   setEnvironments([]);
@@ -87,29 +81,39 @@ export function loadProjects() {
   setDevices([]);
   setSelectedDeviceIds(new Set<string>());
   if (ps.length > 0) {
-    loadEnvironmentsForProject(ps[0].id);
+    loadEnvironmentsForProject(config, ps[0].id);
   }
 }
 
-export function loadEnvironmentsForProject(projectId: string) {
-  const envs = listEnvironments(projectId);
+export function loadEnvironmentsForProject(
+  config: ConfigProvider,
+  projectId: string
+) {
+  const envs = config.listEnvironments(projectId);
   setEnvironments(envs);
   setEnvironmentIndex(0);
   setDevices([]);
   setSelectedDeviceIds(new Set<string>());
-  loadTemplatesForProject(projectId);
+  loadTemplatesForProject(config, projectId);
   if (envs.length > 0) {
-    loadDevicesForEnvironment(projectId, envs[0].id);
+    loadDevicesForEnvironment(config, projectId, envs[0].id);
   }
 }
 
-export function loadTemplatesForProject(projectId: string) {
-  setTemplates(listTemplates(projectId));
+export function loadTemplatesForProject(
+  config: ConfigProvider,
+  projectId: string
+) {
+  setTemplates(config.listTemplates(projectId));
   setTemplateIndex(0);
 }
 
-export function loadDevicesForEnvironment(projectId: string, envId: string) {
-  setDevices(listDevices(projectId, envId));
+export function loadDevicesForEnvironment(
+  config: ConfigProvider,
+  projectId: string,
+  envId: string
+) {
+  setDevices(config.listDevices(projectId, envId));
   setDeviceIndex(0);
   setSelectedDeviceIds(new Set<string>());
 }

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
-import { saveEnvironment } from "../../lib/config";
+import { useServices } from "../../lib/services-context";
 import type { Environment } from "../../lib/types";
 import {
   loadEnvironmentsForProject,
@@ -16,6 +16,7 @@ interface Props {
 type Field = "name" | "path";
 
 export const EnvironmentModal = (props: Props) => {
+  const { config } = useServices();
   const isEdit = !!props.environment;
   const [name, setName] = createSignal(props.environment?.name ?? "");
   const [path, setPath] = createSignal(
@@ -43,8 +44,8 @@ export const EnvironmentModal = (props: Props) => {
       serviceAccountPath: path().trim(),
       createdAt: props.environment?.createdAt ?? new Date().toISOString(),
     };
-    saveEnvironment(proj.id, env);
-    loadEnvironmentsForProject(proj.id);
+    config.saveEnvironment(proj.id, env);
+    loadEnvironmentsForProject(config, proj.id);
     setModal({ type: "none" });
   }
 

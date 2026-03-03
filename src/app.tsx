@@ -1,3 +1,4 @@
+// src/app.tsx
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid";
 import { Show } from "solid-js";
 import { DebugConsole } from "./components/debug-console";
@@ -12,12 +13,9 @@ import { TemplateModal } from "./components/modals/template-modal";
 import { ProjectList } from "./components/project-list";
 import { StatusBar } from "./components/status-bar";
 import { TemplateList } from "./components/template-list";
-import {
-  deleteEnvironment,
-  deleteProject,
-  saveDevices,
-  saveTemplates,
-} from "./lib/config";
+import type { ConfigProvider } from "./lib/config-provider";
+import type { AppServices } from "./lib/services-context";
+import { ServicesContext } from "./lib/services-context";
 import type { ModalState } from "./lib/types";
 import {
   deviceIndex,
@@ -79,13 +77,13 @@ function navName(key: KeyInput): string {
   return key.name;
 }
 
-function handleProjectsKey(key: KeyInput, nav: string) {
+function handleProjectsKey(config: ConfigProvider, key: KeyInput, nav: string) {
   if (nav === "up") {
     const next = Math.max(0, projectIndex() - 1);
     setProjectIndex(next);
     const proj = projects()[next];
     if (proj) {
-      loadEnvironmentsForProject(proj.id);
+      loadEnvironmentsForProject(config, proj.id);
     }
   }
   if (nav === "down") {
@@ -93,7 +91,7 @@ function handleProjectsKey(key: KeyInput, nav: string) {
     setProjectIndex(next);
     const proj = projects()[next];
     if (proj) {
-      loadEnvironmentsForProject(proj.id);
+      loadEnvironmentsForProject(config, proj.id);
     }
   }
   if (key.name === "n") {
@@ -108,20 +106,24 @@ function handleProjectsKey(key: KeyInput, nav: string) {
   if (key.name === "D") {
     const proj = selectedProject();
     if (proj) {
-      deleteProject(proj.id);
-      loadProjects();
+      config.deleteProject(proj.id);
+      loadProjects(config);
     }
   }
 }
 
-function handleEnvironmentsKey(key: KeyInput, nav: string) {
+function handleEnvironmentsKey(
+  config: ConfigProvider,
+  key: KeyInput,
+  nav: string
+) {
   if (nav === "up") {
     const next = Math.max(0, environmentIndex() - 1);
     setEnvironmentIndex(next);
     const proj = selectedProject();
     const env = environments()[next];
     if (proj && env) {
-      loadDevicesForEnvironment(proj.id, env.id);
+      loadDevicesForEnvironment(config, proj.id, env.id);
     }
   }
   if (nav === "down") {
@@ -130,7 +132,7 @@ function handleEnvironmentsKey(key: KeyInput, nav: string) {
     const proj = selectedProject();
     const env = environments()[next];
     if (proj && env) {
-      loadDevicesForEnvironment(proj.id, env.id);
+      loadDevicesForEnvironment(config, proj.id, env.id);
     }
   }
   if (key.name === "n" && selectedProject()) {
@@ -146,13 +148,17 @@ function handleEnvironmentsKey(key: KeyInput, nav: string) {
     const proj = selectedProject();
     const env = selectedEnvironment();
     if (proj && env) {
-      deleteEnvironment(proj.id, env.id);
-      loadEnvironmentsForProject(proj.id);
+      config.deleteEnvironment(proj.id, env.id);
+      loadEnvironmentsForProject(config, proj.id);
     }
   }
 }
 
-function handleTemplatesKey(key: KeyInput, nav: string) {
+function handleTemplatesKey(
+  config: ConfigProvider,
+  key: KeyInput,
+  nav: string
+) {
   if (nav === "up") {
     setTemplateIndex((i) => Math.max(0, i - 1));
   }
@@ -172,14 +178,16 @@ function handleTemplatesKey(key: KeyInput, nav: string) {
     const proj = selectedProject();
     const tpl = selectedTemplate();
     if (proj && tpl) {
-      const updated = templates().filter((t) => t.id !== tpl.id);
-      saveTemplates(proj.id, updated);
-      loadTemplatesForProject(proj.id);
+      config.saveTemplates(
+        proj.id,
+        templates().filter((t) => t.id !== tpl.id)
+      );
+      loadTemplatesForProject(config, proj.id);
     }
   }
 }
 
-function handleDevicesKey(key: KeyInput, nav: string) {
+function handleDevicesKey(config: ConfigProvider, key: KeyInput, nav: string) {
   if (nav === "up") {
     setDeviceIndex((i) => Math.max(0, i - 1));
   }
@@ -211,9 +219,12 @@ function handleDevicesKey(key: KeyInput, nav: string) {
     if (!dev) {
       return;
     }
-    const updated = devices().filter((d) => d.id !== dev.id);
-    saveDevices(proj.id, env.id, updated);
-    loadDevicesForEnvironment(proj.id, env.id);
+    config.saveDevices(
+      proj.id,
+      env.id,
+      devices().filter((d) => d.id !== dev.id)
+    );
+    loadDevicesForEnvironment(config, proj.id, env.id);
   }
 }
 
@@ -226,7 +237,7 @@ function handleConsoleKey(nav: string) {
   }
 }
 
-function handleKey(key: KeyInput) {
+function handleKey(config: ConfigProvider, key: KeyInput) {
   if (modal().type !== "none") {
     return;
   }
@@ -243,8 +254,7 @@ function handleKey(key: KeyInput) {
     return;
   }
   if (key.name === "s" || key.name === "return") {
-    const env = selectedEnvironment();
-    if (env) {
+    if (selectedEnvironment()) {
       setModal({ type: "send" });
     }
     return;
@@ -252,82 +262,87 @@ function handleKey(key: KeyInput) {
   const nav = navName(key);
   const f = focused();
   if (f === "projects") {
-    handleProjectsKey(key, nav);
+    handleProjectsKey(config, key, nav);
   } else if (f === "environments") {
-    handleEnvironmentsKey(key, nav);
+    handleEnvironmentsKey(config, key, nav);
   } else if (f === "templates") {
-    handleTemplatesKey(key, nav);
+    handleTemplatesKey(config, key, nav);
   } else if (f === "devices") {
-    handleDevicesKey(key, nav);
+    handleDevicesKey(config, key, nav);
   } else if (f === "console") {
     handleConsoleKey(nav);
   }
 }
 
-export const App = () => {
-  const dims = useTerminalDimensions();
-  loadProjects();
+interface Props {
+  services: AppServices;
+}
 
-  useKeyboard(handleKey);
+export const App = (props: Props) => {
+  const { config } = props.services;
+  const dims = useTerminalDimensions();
+  loadProjects(config);
+
+  useKeyboard((key) => handleKey(config, key));
 
   const W = () => dims().width ?? 80;
   const H = () => dims().height ?? 24;
   const leftW = () => Math.floor(W() * 0.35);
-  const leftH = () => H() - 3; // minus status bar
+  const leftH = () => H() - 3;
   const panelH = () => Math.floor(leftH() / 3);
   const devicesH = () => Math.floor(leftH() * 0.6);
   const consoleH = () => leftH() - devicesH();
 
   return (
-    <box style={{ flexDirection: "column", width: "100%", height: "100%" }}>
-      <box style={{ flexDirection: "row", flexGrow: 1 }}>
-        {/* Left column */}
-        <box style={{ width: leftW(), flexDirection: "column" }}>
-          <TemplateList height={panelH()} width={leftW()} />
-          <EnvironmentList height={panelH()} width={leftW()} />
-          <ProjectList height={panelH()} width={leftW()} />
+    <ServicesContext.Provider value={props.services}>
+      <box style={{ flexDirection: "column", width: "100%", height: "100%" }}>
+        <box style={{ flexDirection: "row", flexGrow: 1 }}>
+          <box style={{ width: leftW(), flexDirection: "column" }}>
+            <TemplateList height={panelH()} width={leftW()} />
+            <EnvironmentList height={panelH()} width={leftW()} />
+            <ProjectList height={panelH()} width={leftW()} />
+          </box>
+          <box style={{ flexGrow: 1, flexDirection: "column" }}>
+            <DeviceList height={devicesH()} />
+            <DebugConsole height={consoleH()} />
+          </box>
         </box>
-        {/* Right column */}
-        <box style={{ flexGrow: 1, flexDirection: "column" }}>
-          <DeviceList height={devicesH()} />
-          <DebugConsole height={consoleH()} />
-        </box>
-      </box>
-      <StatusBar />
+        <StatusBar />
 
-      <Show when={modal().type === "project"}>
-        <ProjectModal
-          project={
-            (modal() as Extract<ModalState, { type: "project" }>).project
-          }
-        />
-      </Show>
-      <Show when={modal().type === "environment"}>
-        <EnvironmentModal
-          environment={
-            (modal() as Extract<ModalState, { type: "environment" }>)
-              .environment
-          }
-        />
-      </Show>
-      <Show when={modal().type === "template"}>
-        <TemplateModal
-          template={
-            (modal() as Extract<ModalState, { type: "template" }>).template
-          }
-        />
-      </Show>
-      <Show when={modal().type === "device"}>
-        <DeviceModal
-          device={(modal() as Extract<ModalState, { type: "device" }>).device}
-        />
-      </Show>
-      <Show when={modal().type === "message"}>
-        <MessageModal />
-      </Show>
-      <Show when={modal().type === "send"}>
-        <SendModal />
-      </Show>
-    </box>
+        <Show when={modal().type === "project"}>
+          <ProjectModal
+            project={
+              (modal() as Extract<ModalState, { type: "project" }>).project
+            }
+          />
+        </Show>
+        <Show when={modal().type === "environment"}>
+          <EnvironmentModal
+            environment={
+              (modal() as Extract<ModalState, { type: "environment" }>)
+                .environment
+            }
+          />
+        </Show>
+        <Show when={modal().type === "template"}>
+          <TemplateModal
+            template={
+              (modal() as Extract<ModalState, { type: "template" }>).template
+            }
+          />
+        </Show>
+        <Show when={modal().type === "device"}>
+          <DeviceModal
+            device={(modal() as Extract<ModalState, { type: "device" }>).device}
+          />
+        </Show>
+        <Show when={modal().type === "message"}>
+          <MessageModal />
+        </Show>
+        <Show when={modal().type === "send"}>
+          <SendModal />
+        </Show>
+      </box>
+    </ServicesContext.Provider>
   );
 };

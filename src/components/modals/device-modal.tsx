@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
-import { listDevices, saveDevices } from "../../lib/config";
+import { useServices } from "../../lib/services-context";
 import type { Device } from "../../lib/types";
 import {
   loadDevicesForEnvironment,
@@ -17,6 +17,7 @@ interface Props {
 type Field = "name" | "platform" | "token";
 
 export const DeviceModal = (props: Props) => {
+  const { config } = useServices();
   const isEdit = !!props.device;
   const [name, setName] = createSignal(props.device?.name ?? "");
   const [platform, setPlatform] = createSignal<"ios" | "android">(
@@ -49,12 +50,12 @@ export const DeviceModal = (props: Props) => {
       token: token().trim(),
       createdAt: props.device?.createdAt ?? new Date().toISOString(),
     };
-    const existing = listDevices(project.id, env.id);
+    const existing = config.listDevices(project.id, env.id);
     const updated = isEdit
       ? existing.map((d) => (d.id === device.id ? device : d))
       : [...existing, device];
-    saveDevices(project.id, env.id, updated);
-    loadDevicesForEnvironment(project.id, env.id);
+    config.saveDevices(project.id, env.id, updated);
+    loadDevicesForEnvironment(config, project.id, env.id);
     setModal({ type: "none" });
   }
 
