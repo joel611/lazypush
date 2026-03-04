@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
 import { useServices } from "../../lib/services-context";
+import { useTheme } from "../../lib/theme-context";
 import type { MessageTemplate } from "../../lib/types";
 import {
   loadTemplatesForProject,
@@ -19,6 +20,8 @@ type Field = "name" | "title" | "body" | "data";
 
 export const TemplateModal = (props: Props) => {
   const { config } = useServices();
+  const { theme } = useTheme();
+  const t = theme;
   const isEdit = !!props.template;
   const [name, setName] = createSignal(props.template?.name ?? "");
   const [title, setTitle] = createSignal(
@@ -70,7 +73,7 @@ export const TemplateModal = (props: Props) => {
       createdAt: props.template?.createdAt ?? new Date().toISOString(),
     };
     const updated = isEdit
-      ? templates().map((t) => (t.id === tpl.id ? tpl : t))
+      ? templates().map((tplItem) => (tplItem.id === tpl.id ? tpl : tplItem))
       : [...templates(), tpl];
     config.saveTemplates(proj.id, updated);
     loadTemplatesForProject(config, proj.id);
@@ -81,7 +84,7 @@ export const TemplateModal = (props: Props) => {
     if (field() === "name") {
       setName((n) => n.slice(0, -1));
     } else if (field() === "title") {
-      setTitle((t) => t.slice(0, -1));
+      setTitle((s) => s.slice(0, -1));
     } else if (field() === "body") {
       setBody((b) => b.slice(0, -1));
     } else if (field() === "data") {
@@ -93,7 +96,7 @@ export const TemplateModal = (props: Props) => {
     if (field() === "name") {
       setName((n) => n + char);
     } else if (field() === "title") {
-      setTitle((t) => t + char);
+      setTitle((s) => s + char);
     } else if (field() === "body") {
       setBody((b) => b + char);
     } else if (field() === "data") {
@@ -146,7 +149,8 @@ export const TemplateModal = (props: Props) => {
     handleKeyInput(key);
   });
 
-  const active = (f: Field) => (field() === f ? "#FFAA00" : "#444444");
+  const active = (f: Field) =>
+    field() === f ? t().accentTemplate : t().fieldBorder;
 
   return (
     <box
@@ -157,15 +161,15 @@ export const TemplateModal = (props: Props) => {
         width: "80%",
         flexDirection: "column",
         borderStyle: "rounded",
-        borderColor: "#FFAA00",
+        borderColor: t().accentTemplate,
         padding: 2,
-        backgroundColor: "#111111",
+        backgroundColor: t().modalBg,
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>{isEdit ? "Edit Template" : "New Template"}</strong>
       </text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Template Name</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Template Name</text>
       <box
         style={{
           borderStyle: "single",
@@ -173,9 +177,11 @@ export const TemplateModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{name() || " "}</text>
+        <text style={{ fg: t().text }}>{name() || " "}</text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Notification Title</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>
+        Notification Title
+      </text>
       <box
         style={{
           borderStyle: "single",
@@ -183,9 +189,9 @@ export const TemplateModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{title() || " "}</text>
+        <text style={{ fg: t().text }}>{title() || " "}</text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Notification Body</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Notification Body</text>
       <box
         style={{
           borderStyle: "single",
@@ -193,9 +199,9 @@ export const TemplateModal = (props: Props) => {
           padding: 1,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{body() || " "}</text>
+        <text style={{ fg: t().text }}>{body() || " "}</text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Data (JSON)</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Data (JSON)</text>
       <box
         style={{
           borderStyle: "single",
@@ -204,13 +210,13 @@ export const TemplateModal = (props: Props) => {
           height: 4,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{dataStr() || " "}</text>
+        <text style={{ fg: t().text }}>{dataStr() || " "}</text>
       </box>
-      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>
-        <span style={{ fg: "#FFAA00" }}>tab</span>:next
-        <span style={{ fg: "#FFAA00" }}> ctrl+s</span>:save
-        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: t().accentDanger, marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>
+        <span style={{ fg: t().accentTemplate }}>tab</span>:next
+        <span style={{ fg: t().accentTemplate }}> ctrl+s</span>:save
+        <span style={{ fg: t().accentDanger }}> esc</span>:cancel
       </text>
     </box>
   );

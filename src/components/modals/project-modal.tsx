@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
 import { useServices } from "../../lib/services-context";
+import { useTheme } from "../../lib/theme-context";
 import type { Project } from "../../lib/types";
 import { loadProjects, setModal } from "../../store";
 
@@ -11,6 +12,8 @@ interface Props {
 
 export const ProjectModal = (props: Props) => {
   const { config } = useServices();
+  const { theme } = useTheme();
+  const t = theme;
   const isEdit = !!props.project;
   const [name, setName] = createSignal(props.project?.name ?? "");
   const [error, setError] = createSignal("");
@@ -55,24 +58,28 @@ export const ProjectModal = (props: Props) => {
         width: "50%",
         flexDirection: "column",
         borderStyle: "rounded",
-        borderColor: "#00FFFF",
+        borderColor: t().modalBorder,
         padding: 2,
-        backgroundColor: "#111111",
+        backgroundColor: t().modalBg,
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>{isEdit ? "Edit Project" : "New Project"}</strong>
       </text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Name</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Name</text>
       <box
-        style={{ borderStyle: "single", borderColor: "#00FFFF", padding: 1 }}
+        style={{
+          borderStyle: "single",
+          borderColor: t().fieldBorderActive,
+          padding: 1,
+        }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{name() || " "}</text>
+        <text style={{ fg: t().text }}>{name() || " "}</text>
       </box>
-      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>
-        <span style={{ fg: "#00FFFF" }}>enter</span>:save
-        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: t().accentDanger, marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>
+        <span style={{ fg: t().accent }}>enter</span>:save
+        <span style={{ fg: t().accentDanger }}> esc</span>:cancel
       </text>
     </box>
   );
