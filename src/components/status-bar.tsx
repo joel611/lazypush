@@ -1,23 +1,29 @@
 import { Show } from "solid-js";
+import { useTheme } from "../lib/theme-context";
 import { modal } from "../store";
 
 export const StatusBar = () => {
+  const { theme } = useTheme();
+  const t = theme;
   const isModal = () => modal().type !== "none";
 
   return (
-    <box style={{ width: "100%", padding: 1, backgroundColor: "#222222" }}>
+    <box
+      style={{ width: "100%", padding: 1, backgroundColor: t().statusBarBg }}
+    >
       <Show when={!isModal()}>
-        <text style={{ fg: "#888888" }}>
-          <span style={{ fg: "#FFFF00" }}>1-5</span>:pane
-          <span style={{ fg: "#00FFFF" }}> j/k</span>:↑↓
-          <span style={{ fg: "#00FFFF" }}> spc</span>:select
-          <span style={{ fg: "#00FFFF" }}> n</span>:new
-          <span style={{ fg: "#00FFFF" }}> e</span>:edit
-          <span style={{ fg: "#FF4444" }}> D</span>:delete
-          <span style={{ fg: "#00FFFF" }}> m</span>:compose
-          <span style={{ fg: "#FFAA00" }}> t</span>:template
-          <span style={{ fg: "#00FF00" }}> s</span>:send
-          <span style={{ fg: "#FF4444" }}> q</span>:quit
+        <text style={{ fg: t().textMuted }}>
+          <span style={{ fg: t().paneLabel }}>1-5</span>:pane
+          <span style={{ fg: t().accent }}> j/k</span>:↑↓
+          <span style={{ fg: t().accent }}> spc</span>:select
+          <span style={{ fg: t().accent }}> n</span>:new
+          <span style={{ fg: t().accent }}> e</span>:edit
+          <span style={{ fg: t().accentDanger }}> D</span>:delete
+          <span style={{ fg: t().accent }}> m</span>:compose
+          <span style={{ fg: t().accentTemplate }}> t</span>:template
+          <span style={{ fg: t().accentSuccess }}> s</span>:send
+          <span style={{ fg: t().accent }}> T</span>:theme
+          <span style={{ fg: t().accentDanger }}> q</span>:quit
         </text>
       </Show>
     </box>
