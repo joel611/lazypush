@@ -1,7 +1,6 @@
 import { useKeyboard } from "@opentui/solid";
 import { createSignal, Show } from "solid-js";
-import { appendSendLog } from "../../lib/config";
-import { sendNotification, sendToTopic } from "../../lib/fcm";
+import { useServices } from "../../lib/services-context";
 import type { SendLogEntry, SendResult, SendTargetType } from "../../lib/types";
 import {
   appendToSendLog,
@@ -19,6 +18,7 @@ import {
 type Option = "devices" | "topic" | "all";
 
 export const SendModal = () => {
+  const { config, send } = useServices();
   const [option, setOption] = createSignal<Option>("devices");
   const [topicStr, setTopicStr] = createSignal("");
   const [enteringTopic, setEnteringTopic] = createSignal(false);
@@ -46,17 +46,25 @@ export const SendModal = () => {
     if (option() === "topic") {
       targetType = "topic";
       targetInfo = topicStr();
-      const r = await sendToTopic(env.serviceAccountPath, topicStr(), msg);
+      const r = await send.sendToTopic(env.serviceAccountPath, topicStr(), msg);
       results = [r];
     } else if (option() === "all") {
       targetType = "all";
       targetInfo = "all";
-      results = await sendNotification(env.serviceAccountPath, devices(), msg);
+      results = await send.sendNotification(
+        env.serviceAccountPath,
+        devices(),
+        msg
+      );
     } else {
       targetType = "devices";
       const targets = devices().filter((d) => selectedDeviceIds().has(d.id));
       targetInfo = targets.map((d) => d.name).join(", ");
-      results = await sendNotification(env.serviceAccountPath, targets, msg);
+      results = await send.sendNotification(
+        env.serviceAccountPath,
+        targets,
+        msg
+      );
     }
 
     const entry: SendLogEntry = {
@@ -67,7 +75,12 @@ export const SendModal = () => {
       results,
     };
     appendToSendLog(entry);
-    appendSendLog(proj.id, env.id, getOrCreateSessionFile(), entry);
+    config.appendSendLog(
+      proj.id,
+      env.id,
+      getOrCreateSessionFile(config),
+      entry
+    );
   }
 
   function handleTopicKey(key: {

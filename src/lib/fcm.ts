@@ -56,3 +56,12 @@ export async function sendToTopic(
     };
   }
 }
+
+// ─── RealSendProvider ─────────────────────────────────────────────────────────
+
+import type { SendProvider } from "./config-provider";
+
+export const RealSendProvider: SendProvider = {
+  sendNotification,
+  sendToTopic,
+};

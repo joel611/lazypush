@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
-import { saveTemplates } from "../../lib/config";
+import { useServices } from "../../lib/services-context";
 import type { MessageTemplate } from "../../lib/types";
 import {
   loadTemplatesForProject,
@@ -18,6 +18,7 @@ interface Props {
 type Field = "name" | "title" | "body" | "data";
 
 export const TemplateModal = (props: Props) => {
+  const { config } = useServices();
   const isEdit = !!props.template;
   const [name, setName] = createSignal(props.template?.name ?? "");
   const [title, setTitle] = createSignal(
@@ -71,8 +72,8 @@ export const TemplateModal = (props: Props) => {
     const updated = isEdit
       ? templates().map((t) => (t.id === tpl.id ? tpl : t))
       : [...templates(), tpl];
-    saveTemplates(proj.id, updated);
-    loadTemplatesForProject(proj.id);
+    config.saveTemplates(proj.id, updated);
+    loadTemplatesForProject(config, proj.id);
     setModal({ type: "none" });
   }
 

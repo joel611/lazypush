@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
-import { saveProject } from "../../lib/config";
+import { useServices } from "../../lib/services-context";
 import type { Project } from "../../lib/types";
 import { loadProjects, setModal } from "../../store";
 
@@ -10,6 +10,7 @@ interface Props {
 }
 
 export const ProjectModal = (props: Props) => {
+  const { config } = useServices();
   const isEdit = !!props.project;
   const [name, setName] = createSignal(props.project?.name ?? "");
   const [error, setError] = createSignal("");
@@ -24,8 +25,8 @@ export const ProjectModal = (props: Props) => {
       name: name().trim(),
       createdAt: props.project?.createdAt ?? new Date().toISOString(),
     };
-    saveProject(project);
-    loadProjects();
+    config.saveProject(project);
+    loadProjects(config);
     setModal({ type: "none" });
   }
 
