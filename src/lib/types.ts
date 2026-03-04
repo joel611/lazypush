@@ -71,4 +71,11 @@ export type ModalState =
   | { type: "template"; template?: MessageTemplate }
   | { type: "device"; device?: Device }
   | { type: "message" }
-  | { type: "send" };
+  | { type: "send" }
+  | { type: "theme" };
+
+export type ThemeName = "tokyonight-night" | "catppuccin-mocha";
+
+export interface AppSettings {
+  theme: ThemeName;
+}
