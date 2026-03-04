@@ -70,6 +70,7 @@ interface KeyInput {
   ctrl?: boolean;
   name: string;
   sequence?: string;
+  shift?: boolean;
 }
 
 function navName(key: KeyInput): string {
@@ -252,7 +253,7 @@ function handleKey(config: ConfigProvider, key: KeyInput) {
   if (key.name === "q") {
     process.exit(0);
   }
-  if (key.name === "T") {
+  if (key.name === "t" && key.shift) {
     setModal({ type: "theme" });
     return;
   }
