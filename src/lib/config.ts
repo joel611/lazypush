@@ -9,6 +9,7 @@ import {
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type {
+  AppSettings,
   Device,
   Environment,
   MessageTemplate,
@@ -20,10 +21,22 @@ let CONFIG_DIR = join(homedir(), ".config", "lazypush");
 const PROJECTS_DIR = () => join(CONFIG_DIR, "projects");
 const ENV_DIR = (projectId: string, envId: string) =>
   join(PROJECTS_DIR(), projectId, "environments", envId);
+const SETTINGS_PATH = () => join(CONFIG_DIR, "settings.json");
 
 /** For testing only */
 export function __setConfigDir(dir: string) {
   CONFIG_DIR = dir;
+}
+
+const DEFAULT_SETTINGS: AppSettings = { theme: "tokyonight-night" };
+
+export function readSettings(): AppSettings {
+  return safeReadJson<AppSettings>(SETTINGS_PATH()) ?? DEFAULT_SETTINGS;
+}
+
+export function saveSettings(settings: AppSettings): void {
+  ensureDir(CONFIG_DIR);
+  writeFileSync(SETTINGS_PATH(), JSON.stringify(settings, null, 2));
 }
 
 function ensureDir(dir: string) {
@@ -217,4 +230,6 @@ export const DiskConfigProvider: ConfigProvider = {
   saveTemplates,
   appendSendLog,
   newSessionFileName,
+  readSettings,
+  saveSettings,
 };
