@@ -15,7 +15,7 @@ export const DeviceList = (props: Props) => {
         height: props.height,
         flexDirection: "column",
         borderStyle: "single",
-        borderColor: isFocused() ? "#00FFFF" : "#666666",
+        borderColor: isFocused() ? "#00FFFF" : "#555555",
         padding: 1,
       }}
     >

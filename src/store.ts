@@ -22,19 +22,24 @@ export const [focused, setFocused] = createSignal<FocusPanel>("projects");
 
 // Projects
 export const [projects, setProjects] = createSignal<Project[]>([]);
-export const [projectIndex, setProjectIndex] = createSignal(0);
-export const selectedProject = () => projects()[projectIndex()] ?? null;
+export const [projectIndex, setProjectIndex] = createSignal(0); // cursor
+export const [projectActiveIndex, setProjectActiveIndex] = createSignal(0); // activated via spacebar
+export const selectedProject = () => projects()[projectActiveIndex()] ?? null;
 
 // Environments
 export const [environments, setEnvironments] = createSignal<Environment[]>([]);
-export const [environmentIndex, setEnvironmentIndex] = createSignal(0);
+export const [environmentIndex, setEnvironmentIndex] = createSignal(0); // cursor
+export const [environmentActiveIndex, setEnvironmentActiveIndex] =
+  createSignal(0); // activated via spacebar
 export const selectedEnvironment = () =>
-  environments()[environmentIndex()] ?? null;
+  environments()[environmentActiveIndex()] ?? null;
 
 // Templates
 export const [templates, setTemplates] = createSignal<MessageTemplate[]>([]);
-export const [templateIndex, setTemplateIndex] = createSignal(0);
-export const selectedTemplate = () => templates()[templateIndex()] ?? null;
+export const [templateIndex, setTemplateIndex] = createSignal(0); // cursor
+export const [templateActiveIndex, setTemplateActiveIndex] = createSignal(0); // activated via spacebar
+export const selectedTemplate = () =>
+  templates()[templateActiveIndex()] ?? null;
 
 // Devices
 export const [devices, setDevices] = createSignal<Device[]>([]);
@@ -76,8 +81,10 @@ export function loadProjects(config: ConfigProvider) {
   const ps = config.listProjects();
   setProjects(ps);
   setProjectIndex(0);
+  setProjectActiveIndex(0);
   setEnvironments([]);
   setEnvironmentIndex(0);
+  setEnvironmentActiveIndex(0);
   setDevices([]);
   setSelectedDeviceIds(new Set<string>());
   if (ps.length > 0) {
@@ -92,6 +99,7 @@ export function loadEnvironmentsForProject(
   const envs = config.listEnvironments(projectId);
   setEnvironments(envs);
   setEnvironmentIndex(0);
+  setEnvironmentActiveIndex(0);
   setDevices([]);
   setSelectedDeviceIds(new Set<string>());
   loadTemplatesForProject(config, projectId);
@@ -106,6 +114,7 @@ export function loadTemplatesForProject(
 ) {
   setTemplates(config.listTemplates(projectId));
   setTemplateIndex(0);
+  setTemplateActiveIndex(0);
 }
 
 export function loadDevicesForEnvironment(

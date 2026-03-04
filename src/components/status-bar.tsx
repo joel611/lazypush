@@ -10,6 +10,7 @@ export const StatusBar = () => {
         <text style={{ fg: "#888888" }}>
           <span style={{ fg: "#FFFF00" }}>1-5</span>:pane
           <span style={{ fg: "#00FFFF" }}> j/k</span>:↑↓
+          <span style={{ fg: "#00FFFF" }}> spc</span>:select
           <span style={{ fg: "#00FFFF" }}> n</span>:new
           <span style={{ fg: "#00FFFF" }}> e</span>:edit
           <span style={{ fg: "#FF4444" }}> D</span>:delete

@@ -1,9 +1,44 @@
 import { For } from "solid-js";
-import { environmentIndex, environments, focused } from "../store";
+import {
+  environmentActiveIndex,
+  environmentIndex,
+  environments,
+  focused,
+} from "../store";
 
 interface Props {
   height: number;
   width: number;
+}
+
+function itemFg(isCursor: boolean, isActive: boolean): string {
+  if (isCursor) {
+    return "#111111";
+  }
+  if (isActive) {
+    return "#00FFFF";
+  }
+  return "#888888";
+}
+
+function itemBg(isCursor: boolean, isActive: boolean): string {
+  if (!isCursor) {
+    return "transparent";
+  }
+  if (isActive) {
+    return "#00FFFF";
+  }
+  return "#666666";
+}
+
+function itemPrefix(isCursor: boolean, isActive: boolean): string {
+  if (isCursor) {
+    return "> ";
+  }
+  if (isActive) {
+    return "● ";
+  }
+  return "  ";
 }
 
 export const EnvironmentList = (props: Props) => {
@@ -16,7 +51,7 @@ export const EnvironmentList = (props: Props) => {
         height: props.height,
         flexDirection: "column",
         borderStyle: "single",
-        borderColor: isFocused() ? "#00FF88" : "#666666",
+        borderColor: isFocused() ? "#00FFFF" : "#555555",
         padding: 1,
       }}
     >
@@ -26,17 +61,21 @@ export const EnvironmentList = (props: Props) => {
         </strong>
       </text>
       <For each={environments()}>
-        {(env, i) => (
-          <text
-            style={{
-              fg: i() === environmentIndex() ? "#000000" : "#CCCCCC",
-              bg: i() === environmentIndex() ? "#00FF88" : "transparent",
-            }}
-          >
-            {i() === environmentIndex() ? "> " : "  "}
-            {env.name}
-          </text>
-        )}
+        {(env, i) => {
+          const isCursor = () => i() === environmentIndex();
+          const isActive = () => i() === environmentActiveIndex();
+          return (
+            <text
+              style={{
+                fg: itemFg(isCursor(), isActive()),
+                bg: itemBg(isCursor(), isActive()),
+              }}
+            >
+              {itemPrefix(isCursor(), isActive())}
+              {isActive() ? <strong>{env.name}</strong> : env.name}
+            </text>
+          );
+        }}
       </For>
     </box>
   );

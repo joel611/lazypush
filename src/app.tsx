@@ -32,15 +32,18 @@ import {
   projects,
   selectedEnvironment,
   selectedProject,
-  selectedTemplate,
   sendLog,
   setConsoleOffset,
   setDeviceIndex,
+  setEnvironmentActiveIndex,
   setEnvironmentIndex,
   setFocused,
   setModal,
+  setProjectActiveIndex,
   setProjectIndex,
+  setTemplateActiveIndex,
   setTemplateIndex,
+  templateIndex,
   templates,
   toggleDevice,
 } from "./store";
@@ -79,17 +82,15 @@ function navName(key: KeyInput): string {
 
 function handleProjectsKey(config: ConfigProvider, key: KeyInput, nav: string) {
   if (nav === "up") {
-    const next = Math.max(0, projectIndex() - 1);
-    setProjectIndex(next);
-    const proj = projects()[next];
-    if (proj) {
-      loadEnvironmentsForProject(config, proj.id);
-    }
+    setProjectIndex((i) => Math.max(0, i - 1));
   }
   if (nav === "down") {
-    const next = Math.min(projects().length - 1, projectIndex() + 1);
-    setProjectIndex(next);
-    const proj = projects()[next];
+    setProjectIndex((i) => Math.min(projects().length - 1, i + 1));
+  }
+  if (key.name === "space") {
+    const idx = projectIndex();
+    setProjectActiveIndex(idx);
+    const proj = projects()[idx];
     if (proj) {
       loadEnvironmentsForProject(config, proj.id);
     }
@@ -98,13 +99,13 @@ function handleProjectsKey(config: ConfigProvider, key: KeyInput, nav: string) {
     setModal({ type: "project" });
   }
   if (key.name === "e") {
-    const proj = selectedProject();
+    const proj = projects()[projectIndex()];
     if (proj) {
       setModal({ type: "project", project: proj });
     }
   }
   if (key.name === "D") {
-    const proj = selectedProject();
+    const proj = projects()[projectIndex()];
     if (proj) {
       config.deleteProject(proj.id);
       loadProjects(config);
@@ -118,19 +119,16 @@ function handleEnvironmentsKey(
   nav: string
 ) {
   if (nav === "up") {
-    const next = Math.max(0, environmentIndex() - 1);
-    setEnvironmentIndex(next);
-    const proj = selectedProject();
-    const env = environments()[next];
-    if (proj && env) {
-      loadDevicesForEnvironment(config, proj.id, env.id);
-    }
+    setEnvironmentIndex((i) => Math.max(0, i - 1));
   }
   if (nav === "down") {
-    const next = Math.min(environments().length - 1, environmentIndex() + 1);
-    setEnvironmentIndex(next);
+    setEnvironmentIndex((i) => Math.min(environments().length - 1, i + 1));
+  }
+  if (key.name === "space") {
+    const idx = environmentIndex();
+    setEnvironmentActiveIndex(idx);
     const proj = selectedProject();
-    const env = environments()[next];
+    const env = environments()[idx];
     if (proj && env) {
       loadDevicesForEnvironment(config, proj.id, env.id);
     }
@@ -139,14 +137,14 @@ function handleEnvironmentsKey(
     setModal({ type: "environment" });
   }
   if (key.name === "e") {
-    const env = selectedEnvironment();
+    const env = environments()[environmentIndex()];
     if (env) {
       setModal({ type: "environment", environment: env });
     }
   }
   if (key.name === "D") {
     const proj = selectedProject();
-    const env = selectedEnvironment();
+    const env = environments()[environmentIndex()];
     if (proj && env) {
       config.deleteEnvironment(proj.id, env.id);
       loadEnvironmentsForProject(config, proj.id);
@@ -165,18 +163,21 @@ function handleTemplatesKey(
   if (nav === "down") {
     setTemplateIndex((i) => Math.min(templates().length - 1, i + 1));
   }
+  if (key.name === "space") {
+    setTemplateActiveIndex(templateIndex());
+  }
   if (key.name === "n" && selectedProject()) {
     setModal({ type: "template" });
   }
   if (key.name === "e") {
-    const tpl = selectedTemplate();
+    const tpl = templates()[templateIndex()];
     if (tpl) {
       setModal({ type: "template", template: tpl });
     }
   }
   if (key.name === "D") {
     const proj = selectedProject();
-    const tpl = selectedTemplate();
+    const tpl = templates()[templateIndex()];
     if (proj && tpl) {
       config.saveTemplates(
         proj.id,

@@ -1,9 +1,39 @@
 import { For } from "solid-js";
-import { focused, projectIndex, projects } from "../store";
+import { focused, projectActiveIndex, projectIndex, projects } from "../store";
 
 interface Props {
   height: number;
   width: number;
+}
+
+function itemFg(isCursor: boolean, isActive: boolean): string {
+  if (isCursor) {
+    return "#111111";
+  }
+  if (isActive) {
+    return "#00FFFF";
+  }
+  return "#888888";
+}
+
+function itemBg(isCursor: boolean, isActive: boolean): string {
+  if (!isCursor) {
+    return "transparent";
+  }
+  if (isActive) {
+    return "#00FFFF";
+  }
+  return "#666666";
+}
+
+function itemPrefix(isCursor: boolean, isActive: boolean): string {
+  if (isCursor) {
+    return "> ";
+  }
+  if (isActive) {
+    return "● ";
+  }
+  return "  ";
 }
 
 export const ProjectList = (props: Props) => {
@@ -16,7 +46,7 @@ export const ProjectList = (props: Props) => {
         height: props.height,
         flexDirection: "column",
         borderStyle: "single",
-        borderColor: isFocused() ? "#00FFFF" : "#666666",
+        borderColor: isFocused() ? "#00FFFF" : "#555555",
         padding: 1,
       }}
     >
@@ -26,17 +56,21 @@ export const ProjectList = (props: Props) => {
         </strong>
       </text>
       <For each={projects()}>
-        {(project, i) => (
-          <text
-            style={{
-              fg: i() === projectIndex() ? "#000000" : "#CCCCCC",
-              bg: i() === projectIndex() ? "#00FFFF" : "transparent",
-            }}
-          >
-            {i() === projectIndex() ? "> " : "  "}
-            {project.name}
-          </text>
-        )}
+        {(project, i) => {
+          const isCursor = () => i() === projectIndex();
+          const isActive = () => i() === projectActiveIndex();
+          return (
+            <text
+              style={{
+                fg: itemFg(isCursor(), isActive()),
+                bg: itemBg(isCursor(), isActive()),
+              }}
+            >
+              {itemPrefix(isCursor(), isActive())}
+              {isActive() ? <strong>{project.name}</strong> : project.name}
+            </text>
+          );
+        }}
       </For>
     </box>
   );
