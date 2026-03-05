@@ -1,5 +1,9 @@
 // src/app.tsx
-import { useKeyboard, useTerminalDimensions } from "@opentui/solid";
+import {
+  useKeyboard,
+  useRenderer,
+  useTerminalDimensions,
+} from "@opentui/solid";
 import { Show } from "solid-js";
 import { DebugConsole } from "./components/debug-console";
 import { DeviceList } from "./components/device-list";
@@ -241,7 +245,7 @@ function handleConsoleKey(nav: string) {
   }
 }
 
-function handleKey(config: ConfigProvider, key: KeyInput) {
+function handleKey(config: ConfigProvider, quit: () => void, key: KeyInput) {
   if (modal().type !== "none") {
     return;
   }
@@ -251,7 +255,8 @@ function handleKey(config: ConfigProvider, key: KeyInput) {
     return;
   }
   if (key.name === "q") {
-    process.exit(0);
+    quit();
+    return;
   }
   if (key.name === "t" && key.shift) {
     setModal({ type: "theme" });
@@ -289,11 +294,12 @@ interface Props {
 export const App = (props: Props) => {
   const { config } = props.services;
   const dims = useTerminalDimensions();
+  const renderer = useRenderer();
   loadProjects(config);
 
   const initialTheme = config.readSettings().theme;
 
-  useKeyboard((key) => handleKey(config, key));
+  useKeyboard((key) => handleKey(config, () => renderer.destroy(), key));
 
   const W = () => dims().width ?? 80;
   const H = () => dims().height ?? 24;

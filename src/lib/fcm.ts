@@ -4,6 +4,16 @@ import { cert, initializeApp } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
 import type { FcmMessage, SendResult } from "./types";
 
+// gaxios (used by firebase-admin's google-auth-library) checks `window.fetch`
+// to detect native fetch. Bun has no `window`, so it falls back to
+// `import('node-fetch')` which resolves to undefined in Bun 1.x.
+// Expose Bun's native fetch via window so gaxios uses it directly.
+if (typeof globalThis.window === "undefined") {
+  (globalThis as unknown as { window: { fetch: typeof fetch } }).window = {
+    fetch: globalThis.fetch,
+  };
+}
+
 const appCache = new Map<string, App>();
 
 function getFirebaseApp(serviceAccountPath: string): App {
@@ -26,7 +36,10 @@ export async function sendNotification(
   message: FcmMessage
 ): Promise<SendResult[]> {
   const app = getFirebaseApp(serviceAccountPath);
-  const response = await getMessaging(app).sendEachForMulticast({
+  const messaging = getMessaging(app);
+  // Bun does not support HTTP/2; fall back to HTTP/1.1 transport.
+  messaging.enableLegacyHttpTransport();
+  const response = await messaging.sendEachForMulticast({
     tokens: devices.map((d) => d.token),
     ...message,
   });
