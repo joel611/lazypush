@@ -3,7 +3,7 @@ import type { Theme } from "./types";
 export const catppuccinMocha: Theme = {
   name: "catppuccin-mocha",
   panelBg: "transparent",
-  panelBorder: "#313244",
+  panelBorder: "#414254",
   panelBorderActive: "#89b4fa",
   modalBg: "#181825",
   modalBorder: "#89b4fa",
