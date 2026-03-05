@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
@@ -16,6 +17,14 @@ interface Props {
 }
 
 type Field = "name" | "platform" | "token";
+
+function readClipboard(): string {
+  try {
+    return execSync("pbpaste", { encoding: "utf8" }).trim();
+  } catch {
+    return "";
+  }
+}
 
 export const DeviceModal = (props: Props) => {
   const { config } = useServices();
@@ -82,23 +91,46 @@ export const DeviceModal = (props: Props) => {
     }
   }
 
-  useKeyboard((key) => {
-    if (key.name === "escape") {
-      setModal({ type: "none" });
+  function handlePaste() {
+    const clip = readClipboard();
+    if (!clip) {
       return;
     }
+    if (field() === "name") {
+      setName((n) => n + clip);
+    } else if (field() === "token") {
+      setToken((tok) => tok + clip);
+    }
+  }
+
+  function handleNavKey(key: { name: string }): boolean {
     if (key.name === "tab") {
       const idx = fields.indexOf(field());
       setField(fields[(idx + 1) % fields.length]);
-      return;
+      return true;
     }
     if (key.name === "return") {
       const idx = fields.indexOf(field());
       if (idx < fields.length - 1) {
         setField(fields[idx + 1]);
-        return;
+      } else {
+        submit();
       }
-      submit();
+      return true;
+    }
+    return false;
+  }
+
+  useKeyboard((key) => {
+    if (key.name === "escape") {
+      setModal({ type: "none" });
+      return;
+    }
+    if (key.ctrl && key.name === "v") {
+      handlePaste();
+      return;
+    }
+    if (handleNavKey(key)) {
       return;
     }
     if (field() === "platform") {
@@ -174,6 +206,7 @@ export const DeviceModal = (props: Props) => {
       <text style={{ fg: t().textMuted, marginTop: 1 }}>
         <span style={{ fg: t().accent }}>tab</span>:next
         <span style={{ fg: t().accent }}> ←→</span>:toggle platform
+        <span style={{ fg: t().accent }}> ctrl+v</span>:paste
         <span style={{ fg: t().accent }}> enter</span>:confirm
         <span style={{ fg: t().accentDanger }}> esc</span>:cancel
       </text>

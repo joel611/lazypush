@@ -1,0 +1,26 @@
+import type { Theme } from "./types";
+
+export const catppuccinMocha: Theme = {
+  name: "catppuccin-mocha",
+  panelBg: "transparent",
+  panelBorder: "#313244",
+  panelBorderActive: "#89b4fa",
+  modalBg: "#181825",
+  modalBorder: "#89b4fa",
+  statusBarBg: "#181825",
+  text: "#cdd6f4",
+  textMuted: "#6c7086",
+  textDim: "#585b70",
+  textInverted: "#1e1e2e",
+  accent: "#89dceb",
+  accentTemplate: "#fab387",
+  accentSuccess: "#a6e3a1",
+  accentDanger: "#f38ba8",
+  cursorBg: "#313244",
+  cursorBgActive: "#89b4fa",
+  paneLabel: "#f9e2af",
+  fieldBorder: "#45475a",
+  fieldBorderActive: "#89b4fa",
+  deviceText: "#bac2de",
+  selectOptionBg: "#1e3a5f",
+};

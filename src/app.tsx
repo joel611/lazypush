@@ -204,7 +204,7 @@ function handleDevicesKey(config: ConfigProvider, key: KeyInput, nav: string) {
       toggleDevice(dev.id);
     }
   }
-  if (key.name === "a" && selectedProject() && selectedEnvironment()) {
+  if (key.name === "n" && selectedProject() && selectedEnvironment()) {
     setModal({ type: "device" });
   }
   if (key.name === "e") {
