@@ -3,6 +3,7 @@
     "allow": [
       "WebFetch(domain:opentui.com)",
       "Skill(commit-commands:commit-push-pr)",
+      "Bash(bun x tsc",
       "Bash(git:*)"
     ],
     "deny": [],
