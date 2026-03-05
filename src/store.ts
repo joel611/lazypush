@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import type { ConfigProvider } from "./lib/config-provider";
 import type {
+  ConsoleEntry,
   Device,
   Environment,
   FcmMessage,
@@ -64,6 +65,9 @@ export const [message, setMessage] = createStore<FcmMessage>({
 
 // Debug console
 export const [sendLog, setSendLog] = createSignal<SendLogEntry[]>([]);
+export const [consoleEntries, setConsoleEntries] = createSignal<ConsoleEntry[]>(
+  []
+);
 export const [consoleOffset, setConsoleOffset] = createSignal(0);
 
 // Session file (created once per run on first send)
@@ -141,6 +145,20 @@ export function toggleDevice(id: string) {
 
 export function appendToSendLog(entry: SendLogEntry) {
   setSendLog((prev) => [...prev, entry]);
-  // Scroll console to bottom
-  setConsoleOffset(sendLog().length - 1);
+  setConsoleEntries((prev) => [...prev, { kind: "send" as const, ...entry }]);
+}
+
+export function appendDebugEntry(
+  level: import("./lib/types").DebugLevel,
+  message: string
+) {
+  setConsoleEntries((prev) => [
+    ...prev,
+    {
+      kind: "debug" as const,
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+    },
+  ]);
 }
