@@ -49,6 +49,17 @@ export interface MessageTemplate {
 
 export type SendTargetType = "devices" | "topic" | "all";
 
+export type DebugLevel = "log" | "warn" | "error" | "info";
+
+export interface DebugLogEntry {
+  kind: "debug";
+  level: DebugLevel;
+  message: string;
+  timestamp: string;
+}
+
+export type ConsoleEntry = ({ kind: "send" } & SendLogEntry) | DebugLogEntry;
+
 export interface SendLogEntry {
   results: SendResult[];
   targetInfo: string; // comma-joined device names, topic string, or "all"
