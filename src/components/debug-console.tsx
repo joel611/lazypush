@@ -1,4 +1,5 @@
 import { For } from "solid-js";
+import { useTheme } from "../lib/theme-context";
 import { consoleOffset, focused, sendLog } from "../store";
 
 interface Props {
@@ -6,6 +7,8 @@ interface Props {
 }
 
 export const DebugConsole = (props: Props) => {
+  const { theme } = useTheme();
+  const t = theme;
   const isFocused = () => focused() === "console";
 
   return (
@@ -15,14 +18,14 @@ export const DebugConsole = (props: Props) => {
         height: props.height,
         flexDirection: "column",
         borderStyle: "single",
-        borderColor: isFocused() ? "#00FFFF" : "#555555",
+        borderColor: isFocused() ? t().panelBorderActive : t().panelBorder,
         padding: 1,
         overflow: "hidden",
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>
-          <span style={{ fg: "#FFFF00" }}>5</span> Debug Console
+          <span style={{ fg: t().paneLabel }}>5</span> Debug Console
         </strong>
       </text>
       <For each={sendLog().slice(consoleOffset())}>
@@ -31,7 +34,7 @@ export const DebugConsole = (props: Props) => {
           const allOk = entry.results.every((r) => r.success);
           const okCount = entry.results.filter((r) => r.success).length;
           const icon = allOk ? "✓" : "✗";
-          const iconColor = allOk ? "#00FF00" : "#FF4444";
+          const iconColor = allOk ? t().accentSuccess : t().accentDanger;
           const label = entry.templateName
             ? `${entry.templateName}`
             : "(one-off)";
@@ -47,14 +50,14 @@ export const DebugConsole = (props: Props) => {
           return (
             <box style={{ flexDirection: "column", marginTop: 0 }}>
               <text>
-                <span style={{ fg: "#888888" }}>{ts} </span>
+                <span style={{ fg: t().textMuted }}>{ts} </span>
                 <span style={{ fg: iconColor }}>{icon} </span>
-                <span style={{ fg: "#FFFFFF" }}>{label}</span>
-                <span style={{ fg: "#888888" }}> → {target}</span>
+                <span style={{ fg: t().text }}>{label}</span>
+                <span style={{ fg: t().textMuted }}> → {target}</span>
               </text>
               <For each={entry.results.filter((r) => !r.success)}>
                 {(r) => (
-                  <text style={{ fg: "#FF4444", marginLeft: 2 }}>
+                  <text style={{ fg: t().accentDanger, marginLeft: 2 }}>
                     ERR {r.deviceName}: {r.error}
                   </text>
                 )}

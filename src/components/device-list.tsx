@@ -1,4 +1,5 @@
 import { For } from "solid-js";
+import { useTheme } from "../lib/theme-context";
 import { deviceIndex, devices, focused, selectedDeviceIds } from "../store";
 
 interface Props {
@@ -6,6 +7,8 @@ interface Props {
 }
 
 export const DeviceList = (props: Props) => {
+  const { theme } = useTheme();
+  const t = theme;
   const isFocused = () => focused() === "devices";
 
   return (
@@ -15,13 +18,13 @@ export const DeviceList = (props: Props) => {
         height: props.height,
         flexDirection: "column",
         borderStyle: "single",
-        borderColor: isFocused() ? "#00FFFF" : "#555555",
+        borderColor: isFocused() ? t().panelBorderActive : t().panelBorder,
         padding: 1,
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>
-          <span style={{ fg: "#FFFF00" }}>4</span> Devices
+          <span style={{ fg: t().paneLabel }}>4</span> Devices
         </strong>
       </text>
       <For each={devices()}>
@@ -31,13 +34,13 @@ export const DeviceList = (props: Props) => {
           return (
             <text
               style={{
-                fg: isCurrent() ? "#000000" : "#CCCCCC",
-                bg: isCurrent() ? "#00FFFF" : "transparent",
+                fg: isCurrent() ? t().textInverted : t().deviceText,
+                bg: isCurrent() ? t().cursorBgActive : "transparent",
               }}
             >
               {isSelected() ? "[x] " : "[ ] "}
               {device.name}
-              <span style={{ fg: "#888888" }}> ({device.platform})</span>
+              <span style={{ fg: t().textMuted }}> ({device.platform})</span>
             </text>
           );
         }}

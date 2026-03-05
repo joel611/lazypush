@@ -1,7 +1,9 @@
+import { execSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
 import { useServices } from "../../lib/services-context";
+import { useTheme } from "../../lib/theme-context";
 import type { Device } from "../../lib/types";
 import {
   loadDevicesForEnvironment,
@@ -16,8 +18,18 @@ interface Props {
 
 type Field = "name" | "platform" | "token";
 
+function readClipboard(): string {
+  try {
+    return execSync("pbpaste", { encoding: "utf8" }).trim();
+  } catch {
+    return "";
+  }
+}
+
 export const DeviceModal = (props: Props) => {
   const { config } = useServices();
+  const { theme } = useTheme();
+  const t = theme;
   const isEdit = !!props.device;
   const [name, setName] = createSignal(props.device?.name ?? "");
   const [platform, setPlatform] = createSignal<"ios" | "android">(
@@ -68,15 +80,45 @@ export const DeviceModal = (props: Props) => {
       if (field() === "name") {
         setName((n) => n.slice(0, -1));
       } else if (field() === "token") {
-        setToken((t) => t.slice(0, -1));
+        setToken((tok) => tok.slice(0, -1));
       }
     } else if (key.sequence && key.sequence.length === 1 && !key.ctrl) {
       if (field() === "name") {
         setName((n) => n + key.sequence);
       } else if (field() === "token") {
-        setToken((t) => t + key.sequence);
+        setToken((tok) => tok + key.sequence);
       }
     }
+  }
+
+  function handlePaste() {
+    const clip = readClipboard();
+    if (!clip) {
+      return;
+    }
+    if (field() === "name") {
+      setName((n) => n + clip);
+    } else if (field() === "token") {
+      setToken((tok) => tok + clip);
+    }
+  }
+
+  function handleNavKey(key: { name: string }): boolean {
+    if (key.name === "tab") {
+      const idx = fields.indexOf(field());
+      setField(fields[(idx + 1) % fields.length]);
+      return true;
+    }
+    if (key.name === "return") {
+      const idx = fields.indexOf(field());
+      if (idx < fields.length - 1) {
+        setField(fields[idx + 1]);
+      } else {
+        submit();
+      }
+      return true;
+    }
+    return false;
   }
 
   useKeyboard((key) => {
@@ -84,18 +126,11 @@ export const DeviceModal = (props: Props) => {
       setModal({ type: "none" });
       return;
     }
-    if (key.name === "tab") {
-      const idx = fields.indexOf(field());
-      setField(fields[(idx + 1) % fields.length]);
+    if (key.ctrl && key.name === "v") {
+      handlePaste();
       return;
     }
-    if (key.name === "return") {
-      const idx = fields.indexOf(field());
-      if (idx < fields.length - 1) {
-        setField(fields[idx + 1]);
-        return;
-      }
-      submit();
+    if (handleNavKey(key)) {
       return;
     }
     if (field() === "platform") {
@@ -107,6 +142,9 @@ export const DeviceModal = (props: Props) => {
     handleTextKey(key);
   });
 
+  const fieldBorder = (f: Field) =>
+    field() === f ? t().fieldBorderActive : t().fieldBorder;
+
   return (
     <box
       style={{
@@ -116,56 +154,61 @@ export const DeviceModal = (props: Props) => {
         width: "60%",
         flexDirection: "column",
         borderStyle: "rounded",
-        borderColor: "#00FFFF",
+        borderColor: t().modalBorder,
         padding: 2,
-        backgroundColor: "#111111",
+        backgroundColor: t().modalBg,
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>{isEdit ? "Edit Device" : "Add Device"}</strong>
       </text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Name</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Name</text>
       <box
         style={{
           borderStyle: "single",
-          borderColor: field() === "name" ? "#00FFFF" : "#444444",
+          borderColor: fieldBorder("name"),
           padding: 1,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{name() || " "}</text>
+        <text style={{ fg: t().text }}>{name() || " "}</text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Platform</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Platform</text>
       <box
         style={{
           borderStyle: "single",
-          borderColor: field() === "platform" ? "#00FFFF" : "#444444",
+          borderColor: fieldBorder("platform"),
           padding: 1,
         }}
       >
-        <text style={{ fg: platform() === "ios" ? "#00FFFF" : "#888888" }}>
+        <text style={{ fg: platform() === "ios" ? t().accent : t().textMuted }}>
           ios
         </text>
-        <text style={{ fg: "#888888" }}> | </text>
-        <text style={{ fg: platform() === "android" ? "#00FFFF" : "#888888" }}>
+        <text style={{ fg: t().textMuted }}> | </text>
+        <text
+          style={{
+            fg: platform() === "android" ? t().accent : t().textMuted,
+          }}
+        >
           android
         </text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>FCM Token</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>FCM Token</text>
       <box
         style={{
           borderStyle: "single",
-          borderColor: field() === "token" ? "#00FFFF" : "#444444",
+          borderColor: fieldBorder("token"),
           padding: 1,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{token() || " "}</text>
+        <text style={{ fg: t().text }}>{token() || " "}</text>
       </box>
-      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>
-        <span style={{ fg: "#00FFFF" }}>tab</span>:next
-        <span style={{ fg: "#00FFFF" }}> ←→</span>:toggle platform
-        <span style={{ fg: "#00FFFF" }}> enter</span>:confirm
-        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: t().accentDanger, marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>
+        <span style={{ fg: t().accent }}>tab</span>:next
+        <span style={{ fg: t().accent }}> ←→</span>:toggle platform
+        <span style={{ fg: t().accent }}> ctrl+v</span>:paste
+        <span style={{ fg: t().accent }}> enter</span>:confirm
+        <span style={{ fg: t().accentDanger }}> esc</span>:cancel
       </text>
     </box>
   );

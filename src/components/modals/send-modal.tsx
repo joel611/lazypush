@@ -1,6 +1,7 @@
 import { useKeyboard } from "@opentui/solid";
 import { createSignal, Show } from "solid-js";
 import { useServices } from "../../lib/services-context";
+import { useTheme } from "../../lib/theme-context";
 import type { SendLogEntry, SendResult, SendTargetType } from "../../lib/types";
 import {
   appendToSendLog,
@@ -19,6 +20,8 @@ type Option = "devices" | "topic" | "all";
 
 export const SendModal = () => {
   const { config, send } = useServices();
+  const { theme } = useTheme();
+  const t = theme;
   const [option, setOption] = createSignal<Option>("devices");
   const [topicStr, setTopicStr] = createSignal("");
   const [enteringTopic, setEnteringTopic] = createSignal(false);
@@ -97,9 +100,9 @@ export const SendModal = () => {
       return;
     }
     if (key.name === "backspace") {
-      setTopicStr((t) => t.slice(0, -1));
+      setTopicStr((s) => s.slice(0, -1));
     } else if (key.sequence && key.sequence.length === 1 && !key.ctrl) {
-      setTopicStr((t) => t + key.sequence);
+      setTopicStr((s) => s + key.sequence);
     }
   }
 
@@ -134,8 +137,10 @@ export const SendModal = () => {
     }
   });
 
-  const highlight = (o: Option) => (option() === o ? "#00FFFF" : "#CCCCCC");
-  const bg = (o: Option) => (option() === o ? "#003333" : "transparent");
+  const highlight = (o: Option) =>
+    option() === o ? t().accent : t().deviceText;
+  const bg = (o: Option) =>
+    option() === o ? t().selectOptionBg : "transparent";
 
   return (
     <box
@@ -146,12 +151,12 @@ export const SendModal = () => {
         width: "50%",
         flexDirection: "column",
         borderStyle: "rounded",
-        borderColor: "#00FF00",
+        borderColor: t().accentSuccess,
         padding: 2,
-        backgroundColor: "#111111",
+        backgroundColor: t().modalBg,
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>Send As</strong>
       </text>
       <box style={{ backgroundColor: bg("devices"), padding: 1, marginTop: 1 }}>
@@ -167,9 +172,13 @@ export const SendModal = () => {
       </box>
       <Show when={option() === "topic" && enteringTopic()}>
         <box
-          style={{ borderStyle: "single", borderColor: "#00FF00", padding: 1 }}
+          style={{
+            borderStyle: "single",
+            borderColor: t().accentSuccess,
+            padding: 1,
+          }}
         >
-          <text style={{ fg: "#FFFFFF" }}>{topicStr() || " "}</text>
+          <text style={{ fg: t().text }}>{topicStr() || " "}</text>
         </box>
       </Show>
       <box style={{ backgroundColor: bg("all"), padding: 1 }}>
@@ -178,10 +187,10 @@ export const SendModal = () => {
           {devices().length} total)
         </text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>
-        <span style={{ fg: "#00FF00" }}>↑↓</span>:choose
-        <span style={{ fg: "#00FF00" }}> enter</span>:send
-        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>
+        <span style={{ fg: t().accentSuccess }}>↑↓</span>:choose
+        <span style={{ fg: t().accentSuccess }}> enter</span>:send
+        <span style={{ fg: t().accentDanger }}> esc</span>:cancel
       </text>
     </box>
   );

@@ -1,10 +1,13 @@
 import { useKeyboard } from "@opentui/solid";
 import { createSignal } from "solid-js";
+import { useTheme } from "../../lib/theme-context";
 import { message, setMessage, setModal } from "../../store";
 
 type Field = "title" | "body" | "data";
 
 export const MessageModal = () => {
+  const { theme } = useTheme();
+  const t = theme;
   const [field, setField] = createSignal<Field>("title");
   const [dataStr, setDataStr] = createSignal(
     Object.keys(message.data ?? {}).length > 0
@@ -105,7 +108,8 @@ export const MessageModal = () => {
     handleKeyInput(key);
   });
 
-  const active = (f: Field) => (field() === f ? "#00FFFF" : "#444444");
+  const active = (f: Field) =>
+    field() === f ? t().fieldBorderActive : t().fieldBorder;
 
   return (
     <box
@@ -116,15 +120,15 @@ export const MessageModal = () => {
         width: "70%",
         flexDirection: "column",
         borderStyle: "rounded",
-        borderColor: "#00FFFF",
+        borderColor: t().modalBorder,
         padding: 2,
-        backgroundColor: "#111111",
+        backgroundColor: t().modalBg,
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>Compose Message</strong>
       </text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Title</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Title</text>
       <box
         style={{
           borderStyle: "single",
@@ -132,11 +136,11 @@ export const MessageModal = () => {
           padding: 1,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>
+        <text style={{ fg: t().text }}>
           {message.notification.title || " "}
         </text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Body</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Body</text>
       <box
         style={{
           borderStyle: "single",
@@ -144,11 +148,9 @@ export const MessageModal = () => {
           padding: 1,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>
-          {message.notification.body || " "}
-        </text>
+        <text style={{ fg: t().text }}>{message.notification.body || " "}</text>
       </box>
-      <text style={{ fg: "#888888", marginTop: 1 }}>Data (JSON)</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>Data (JSON)</text>
       <box
         style={{
           borderStyle: "single",
@@ -157,13 +159,13 @@ export const MessageModal = () => {
           height: 5,
         }}
       >
-        <text style={{ fg: "#FFFFFF" }}>{dataStr() || " "}</text>
+        <text style={{ fg: t().text }}>{dataStr() || " "}</text>
       </box>
-      <text style={{ fg: "#FF4444", marginTop: 1 }}>{error()}</text>
-      <text style={{ fg: "#888888", marginTop: 1 }}>
-        <span style={{ fg: "#00FFFF" }}>tab</span>:next field
-        <span style={{ fg: "#00FFFF" }}> ctrl+s</span>:save
-        <span style={{ fg: "#FF4444" }}> esc</span>:cancel
+      <text style={{ fg: t().accentDanger, marginTop: 1 }}>{error()}</text>
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>
+        <span style={{ fg: t().accent }}>tab</span>:next field
+        <span style={{ fg: t().accent }}> ctrl+s</span>:save
+        <span style={{ fg: t().accentDanger }}> esc</span>:cancel
       </text>
     </box>
   );

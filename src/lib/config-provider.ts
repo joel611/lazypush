@@ -1,5 +1,6 @@
 // src/lib/config-provider.ts
 import type {
+  AppSettings,
   Device,
   Environment,
   FcmMessage,
@@ -23,9 +24,11 @@ export interface ConfigProvider {
   listProjects(): Project[];
   listTemplates(projectId: string): MessageTemplate[];
   newSessionFileName(): string;
+  readSettings(): AppSettings;
   saveDevices(projectId: string, envId: string, devices: Device[]): void;
   saveEnvironment(projectId: string, env: Environment): void;
   saveProject(p: Project): void;
+  saveSettings(settings: AppSettings): void;
   saveTemplates(projectId: string, templates: MessageTemplate[]): void;
 }
 

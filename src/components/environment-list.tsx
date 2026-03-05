@@ -1,4 +1,6 @@
 import { For } from "solid-js";
+import { useTheme } from "../lib/theme-context";
+import type { Theme } from "../lib/themes";
 import {
   environmentActiveIndex,
   environmentIndex,
@@ -11,24 +13,24 @@ interface Props {
   width: number;
 }
 
-function itemFg(isCursor: boolean, isActive: boolean): string {
+function itemFg(t: Theme, isCursor: boolean, isActive: boolean): string {
   if (isCursor) {
-    return "#111111";
+    return t.textInverted;
   }
   if (isActive) {
-    return "#00FFFF";
+    return t.accent;
   }
-  return "#888888";
+  return t.textMuted;
 }
 
-function itemBg(isCursor: boolean, isActive: boolean): string {
+function itemBg(t: Theme, isCursor: boolean, isActive: boolean): string {
   if (!isCursor) {
     return "transparent";
   }
   if (isActive) {
-    return "#00FFFF";
+    return t.cursorBgActive;
   }
-  return "#666666";
+  return t.cursorBg;
 }
 
 function itemPrefix(isCursor: boolean, isActive: boolean): string {
@@ -42,6 +44,8 @@ function itemPrefix(isCursor: boolean, isActive: boolean): string {
 }
 
 export const EnvironmentList = (props: Props) => {
+  const { theme } = useTheme();
+  const t = theme;
   const isFocused = () => focused() === "environments";
 
   return (
@@ -51,13 +55,13 @@ export const EnvironmentList = (props: Props) => {
         height: props.height,
         flexDirection: "column",
         borderStyle: "single",
-        borderColor: isFocused() ? "#00FFFF" : "#555555",
+        borderColor: isFocused() ? t().panelBorderActive : t().panelBorder,
         padding: 1,
       }}
     >
-      <text fg="#FFFFFF">
+      <text style={{ fg: t().text }}>
         <strong>
-          <span style={{ fg: "#FFFF00" }}>2</span> Environments
+          <span style={{ fg: t().paneLabel }}>2</span> Environments
         </strong>
       </text>
       <For each={environments()}>
@@ -67,8 +71,8 @@ export const EnvironmentList = (props: Props) => {
           return (
             <text
               style={{
-                fg: itemFg(isCursor(), isActive()),
-                bg: itemBg(isCursor(), isActive()),
+                fg: itemFg(t(), isCursor(), isActive()),
+                bg: itemBg(t(), isCursor(), isActive()),
               }}
             >
               {itemPrefix(isCursor(), isActive())}

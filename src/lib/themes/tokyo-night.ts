@@ -1,0 +1,26 @@
+import type { Theme } from "./types";
+
+export const tokyoNight: Theme = {
+  name: "tokyonight-night",
+  panelBg: "transparent",
+  panelBorder: "#292e42",
+  panelBorderActive: "#7aa2f7",
+  modalBg: "#16161e",
+  modalBorder: "#7aa2f7",
+  statusBarBg: "#16161e",
+  text: "#c0caf5",
+  textMuted: "#565f89",
+  textDim: "#414868",
+  textInverted: "#1a1b26",
+  accent: "#7dcfff",
+  accentTemplate: "#e0af68",
+  accentSuccess: "#9ece6a",
+  accentDanger: "#f7768e",
+  cursorBg: "#292e42",
+  cursorBgActive: "#7aa2f7",
+  paneLabel: "#e0af68",
+  fieldBorder: "#292e42",
+  fieldBorderActive: "#7aa2f7",
+  deviceText: "#9aa5ce",
+  selectOptionBg: "#1a2b47",
+};

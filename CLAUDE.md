@@ -96,6 +96,14 @@ keyboard event → App.tsx handler → store.ts (state update)
 - `<box>` background: `backgroundColor:` is correct — do NOT change to `bg:`
 - When debugging prop issues, check `setProperty()` in `node_modules/@opentui/solid/index.js`
 
+### OpenTUI Keyboard Handling
+- **Uppercase key normalization**: OpenTUI lowercases all uppercase keystrokes and sets `shift: true`. `Shift+T` → `{ name: "t", shift: true }`, NOT `{ name: "T" }`. Always use `key.name === "t" && key.shift` pattern for shift-key bindings.
+- **Local KeyInput interface**: `src/app.tsx` defines its own `KeyInput` — add `shift?: boolean` when adding shift-key handlers.
+
+### Ultracite (Biome Linter) Gotchas
+- **No nested ternaries**: `noNestedTernary` rule fires on `a ? b : c ? d : e`. Extract a helper function instead.
+- **Unused import removal**: Linter strips imports with no usage before commit. Always add import + first usage in the same edit.
+
 - **Runtime**: Bun — no transpile step; run and test with `bun` directly
 - **Reactivity**: SolidJS patterns — `createSignal`, `createStore`, `createMemo`; avoid mutable state outside the store
 - **Components**: PascalCase files in `src/components/`; functional components only
