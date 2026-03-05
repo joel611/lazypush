@@ -34,8 +34,23 @@ const DEFAULT_SETTINGS: AppSettings = {
   themeMode: "system",
 };
 
+interface LegacySettings {
+  theme: string;
+}
+
+function migrateSettings(raw: AppSettings | LegacySettings): AppSettings {
+  if ("lightTheme" in raw && "darkTheme" in raw && "themeMode" in raw) {
+    return raw as AppSettings;
+  }
+  return DEFAULT_SETTINGS;
+}
+
 export function readSettings(): AppSettings {
-  return safeReadJson<AppSettings>(SETTINGS_PATH()) ?? DEFAULT_SETTINGS;
+  const raw = safeReadJson<AppSettings | LegacySettings>(SETTINGS_PATH());
+  if (!raw) {
+    return DEFAULT_SETTINGS;
+  }
+  return migrateSettings(raw);
 }
 
 export function saveSettings(settings: AppSettings): void {
