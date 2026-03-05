@@ -6,7 +6,7 @@
     "strict": true,
     "skipLibCheck": true,
     "jsx": "preserve",
-    "jsxImportSource": "@opentui/solid",
+    "jsxImportSource": "solid-js",
     "types": ["bun-types"]
   },
   "include": ["src/**/*"]
