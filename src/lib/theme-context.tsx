@@ -12,6 +12,7 @@ interface ThemeContextValue {
   lightThemeName: Accessor<ThemeName>;
   setDarkTheme: (name: ThemeName) => void;
   setLightTheme: (name: ThemeName) => void;
+  setPreviewTheme: (name: ThemeName | null) => void;
   setThemeMode: (mode: ThemeMode) => void;
   theme: Accessor<Theme>;
   themeMode: Accessor<ThemeMode>;
@@ -47,6 +48,9 @@ export function ThemeProvider(props: Props) {
     props.initialSettings.themeMode
   );
 
+  const [previewThemeName, setPreviewThemeName] =
+    createSignal<ThemeName | null>(null);
+
   const resolvedMode = createMemo<"light" | "dark">(() => {
     const mode = themeMode();
     if (mode !== "system") {
@@ -55,11 +59,15 @@ export function ThemeProvider(props: Props) {
     return detectSystemPreference();
   });
 
-  const theme = createMemo<Theme>(() =>
-    resolvedMode() === "light"
+  const theme = createMemo<Theme>(() => {
+    const preview = previewThemeName();
+    if (preview) {
+      return THEMES[preview];
+    }
+    return resolvedMode() === "light"
       ? THEMES[lightThemeName()]
-      : THEMES[darkThemeName()]
-  );
+      : THEMES[darkThemeName()];
+  });
 
   function saveSettings() {
     config.saveSettings({
@@ -94,6 +102,7 @@ export function ThemeProvider(props: Props) {
         setLightTheme: setLightThemeAndSave,
         setDarkTheme: setDarkThemeAndSave,
         setThemeMode: setThemeModeAndSave,
+        setPreviewTheme: setPreviewThemeName,
       }}
     >
       {props.children}

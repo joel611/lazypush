@@ -1,6 +1,6 @@
 // src/components/modals/theme-modal.tsx
 import { useKeyboard } from "@opentui/solid";
-import { createSignal, For } from "solid-js";
+import { createEffect, createSignal, For, onCleanup } from "solid-js";
 import { useTheme } from "../../lib/theme-context";
 import { DARK_THEMES, LIGHT_THEMES, THEME_META } from "../../lib/themes";
 import type { ThemeMode, ThemeName } from "../../lib/types";
@@ -96,12 +96,27 @@ export const ThemeModal = () => {
     setLightTheme,
     setDarkTheme,
     setThemeMode,
+    setPreviewTheme,
   } = useTheme();
 
   const [activeTab, setActiveTab] = createSignal<TabId>("mode");
   const [cursor, setCursor] = createSignal(
     initialCursorForTab("mode", themeMode(), lightThemeName(), darkThemeName())
   );
+
+  createEffect(() => {
+    const tab = activeTab();
+    const cur = cursor();
+    if (tab === "mode") {
+      setPreviewTheme(null);
+      return;
+    }
+    const items = itemsForTab(tab);
+    const item = items[cur];
+    setPreviewTheme((item as ThemeName) ?? null);
+  });
+
+  onCleanup(() => setPreviewTheme(null));
 
   function switchTab(tab: TabId) {
     setActiveTab(tab);
