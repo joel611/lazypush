@@ -85,8 +85,19 @@ export type ModalState =
   | { type: "send" }
   | { type: "theme" };
 
-export type ThemeName = "tokyonight-night" | "catppuccin-mocha";
+export type ThemeName =
+  | "tokyonight-night"
+  | "tokyonight-storm"
+  | "tokyonight-day"
+  | "catppuccin-latte"
+  | "catppuccin-frappe"
+  | "catppuccin-macchiato"
+  | "catppuccin-mocha";
+
+export type ThemeMode = "system" | "light" | "dark";
 
 export interface AppSettings {
-  theme: ThemeName;
+  darkTheme: ThemeName;
+  lightTheme: ThemeName;
+  themeMode: ThemeMode;
 }
