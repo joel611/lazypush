@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 // src/index.tsx
 import { render } from "@opentui/solid";
 import { App } from "./app";
