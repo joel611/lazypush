@@ -7,3 +7,4 @@ node_modules/
 serviceAccount*.json
 service-account*.json
 .worktrees/
+dist/

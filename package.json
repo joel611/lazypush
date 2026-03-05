@@ -2,8 +2,12 @@
   "name": "lazypush",
   "version": "0.1.0",
   "type": "module",
+  "bin": {
+    "lazypush": "src/index.tsx"
+  },
   "scripts": {
     "dev": "bun run src/index.tsx",
+    "build": "bun build --compile --minify src/index.tsx --outfile dist/lazypush",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "check": "ultracite check",
