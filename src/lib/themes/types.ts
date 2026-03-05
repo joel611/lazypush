@@ -17,6 +17,7 @@ export interface Theme {
   // Modals
   modalBg: string;
   modalBorder: string;
+  mode: "light" | "dark";
   name: ThemeName;
   paneLabel: string;
   // Panels

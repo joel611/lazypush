@@ -297,7 +297,7 @@ export const App = (props: Props) => {
   const renderer = useRenderer();
   loadProjects(config);
 
-  const initialTheme = config.readSettings().theme;
+  const initialSettings = config.readSettings();
 
   useKeyboard((key) => handleKey(config, () => renderer.destroy(), key));
 
@@ -311,7 +311,7 @@ export const App = (props: Props) => {
 
   return (
     <ServicesContext.Provider value={props.services}>
-      <ThemeProvider initialTheme={initialTheme}>
+      <ThemeProvider initialSettings={initialSettings}>
         <box style={{ flexDirection: "column", width: "100%", height: "100%" }}>
           <box style={{ flexDirection: "row", flexGrow: 1 }}>
             <box style={{ width: leftW(), flexDirection: "column" }}>

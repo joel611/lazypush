@@ -180,7 +180,11 @@ export function createDemoConfigProvider(): ConfigProvider {
       return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.json`;
     },
 
-    readSettings: () => ({ theme: "tokyonight-night" as const }),
+    readSettings: () => ({
+      darkTheme: "tokyonight-night" as const,
+      lightTheme: "catppuccin-latte" as const,
+      themeMode: "system" as const,
+    }),
     saveSettings: () => {
       /* demo mode: no persistence */
     },

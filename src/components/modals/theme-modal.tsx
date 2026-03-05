@@ -2,11 +2,76 @@
 import { useKeyboard } from "@opentui/solid";
 import { createSignal, For } from "solid-js";
 import { useTheme } from "../../lib/theme-context";
-import { THEMES } from "../../lib/themes";
-import type { ThemeName } from "../../lib/types";
+import { DARK_THEMES, LIGHT_THEMES, THEME_META } from "../../lib/themes";
+import type { ThemeMode, ThemeName } from "../../lib/types";
 import { setModal } from "../../store";
 
-const THEME_NAMES = Object.keys(THEMES) as ThemeName[];
+type TabId = "mode" | "light" | "dark";
+const TABS: TabId[] = ["mode", "light", "dark"];
+const MODES: ThemeMode[] = ["system", "light", "dark"];
+const MODE_LABELS: Record<ThemeMode, string> = {
+  system: "System",
+  light: "Light",
+  dark: "Dark",
+};
+
+function tabLabel(tab: TabId): string {
+  if (tab === "mode") {
+    return "Mode";
+  }
+  if (tab === "light") {
+    return "Light";
+  }
+  return "Dark";
+}
+
+function itemsForTab(tab: TabId): string[] {
+  if (tab === "mode") {
+    return MODES;
+  }
+  if (tab === "light") {
+    return LIGHT_THEMES;
+  }
+  return DARK_THEMES;
+}
+
+function initialCursorForTab(
+  tab: TabId,
+  themeMode: ThemeMode,
+  lightTheme: ThemeName,
+  darkTheme: ThemeName
+): number {
+  if (tab === "mode") {
+    return Math.max(0, MODES.indexOf(themeMode));
+  }
+  if (tab === "light") {
+    return Math.max(0, LIGHT_THEMES.indexOf(lightTheme));
+  }
+  return Math.max(0, DARK_THEMES.indexOf(darkTheme));
+}
+
+function isActiveItem(
+  tab: TabId,
+  item: string,
+  themeMode: ThemeMode,
+  lightTheme: ThemeName,
+  darkTheme: ThemeName
+): boolean {
+  if (tab === "mode") {
+    return item === themeMode;
+  }
+  if (tab === "light") {
+    return item === lightTheme;
+  }
+  return item === darkTheme;
+}
+
+function displayName(tab: TabId, item: string): string {
+  if (tab === "mode") {
+    return MODE_LABELS[item as ThemeMode] ?? item;
+  }
+  return THEME_META[item as ThemeName]?.label ?? item;
+}
 
 function itemFg(
   t: ReturnType<ReturnType<typeof useTheme>["theme"]>,
@@ -23,18 +88,61 @@ function itemFg(
 }
 
 export const ThemeModal = () => {
-  const { theme, setThemeName } = useTheme();
+  const {
+    theme,
+    themeMode,
+    lightThemeName,
+    darkThemeName,
+    setLightTheme,
+    setDarkTheme,
+    setThemeMode,
+  } = useTheme();
+
+  const [activeTab, setActiveTab] = createSignal<TabId>("mode");
   const [cursor, setCursor] = createSignal(
-    Math.max(0, THEME_NAMES.indexOf(theme().name))
+    initialCursorForTab("mode", themeMode(), lightThemeName(), darkThemeName())
   );
+
+  function switchTab(tab: TabId) {
+    setActiveTab(tab);
+    setCursor(
+      initialCursorForTab(tab, themeMode(), lightThemeName(), darkThemeName())
+    );
+  }
+
+  function selectCurrent() {
+    const tab = activeTab();
+    const items = itemsForTab(tab);
+    const item = items[cursor()];
+    if (!item) {
+      return;
+    }
+    if (tab === "mode") {
+      setThemeMode(item as ThemeMode);
+    } else if (tab === "light") {
+      setLightTheme(item as ThemeName);
+    } else {
+      setDarkTheme(item as ThemeName);
+    }
+    setModal({ type: "none" });
+  }
 
   useKeyboard((key) => {
     if (key.name === "escape") {
       setModal({ type: "none" });
       return;
     }
+    if (key.name === "tab") {
+      const nextIdx = (TABS.indexOf(activeTab()) + 1) % TABS.length;
+      const nextTab = TABS[nextIdx];
+      if (nextTab) {
+        switchTab(nextTab);
+      }
+      return;
+    }
     if (key.name === "j" || key.name === "down") {
-      setCursor((i) => Math.min(THEME_NAMES.length - 1, i + 1));
+      const max = itemsForTab(activeTab()).length - 1;
+      setCursor((i) => Math.min(max, i + 1));
       return;
     }
     if (key.name === "k" || key.name === "up") {
@@ -42,11 +150,7 @@ export const ThemeModal = () => {
       return;
     }
     if (key.name === "return" || key.name === "space") {
-      const name = THEME_NAMES[cursor()];
-      if (name) {
-        setThemeName(name);
-      }
-      setModal({ type: "none" });
+      selectCurrent();
     }
   });
 
@@ -56,9 +160,9 @@ export const ThemeModal = () => {
     <box
       style={{
         position: "absolute",
-        top: "30%",
-        left: "35%",
-        width: "30%",
+        top: "20%",
+        left: "30%",
+        width: "40%",
         flexDirection: "column",
         borderStyle: "rounded",
         borderColor: t().accent,
@@ -69,10 +173,36 @@ export const ThemeModal = () => {
       <text style={{ fg: t().text }}>
         <strong>Theme</strong>
       </text>
-      <For each={THEME_NAMES}>
-        {(name, i) => {
+
+      {/* Tab bar */}
+      <text style={{ fg: t().textMuted, marginTop: 1 }}>
+        <For each={TABS}>
+          {(tab, i) => (
+            <>
+              <span
+                style={{
+                  fg: activeTab() === tab ? t().cursorBgActive : t().textMuted,
+                }}
+              >
+                {i() > 0 ? "  " : ""}[{tabLabel(tab)}]
+              </span>
+            </>
+          )}
+        </For>
+      </text>
+
+      {/* Items */}
+      <For each={itemsForTab(activeTab())}>
+        {(item, i) => {
           const isCursor = () => i() === cursor();
-          const isActive = () => name === theme().name;
+          const isActive = () =>
+            isActiveItem(
+              activeTab(),
+              item,
+              themeMode(),
+              lightThemeName(),
+              darkThemeName()
+            );
           return (
             <text
               style={{
@@ -82,14 +212,16 @@ export const ThemeModal = () => {
               }}
             >
               {isCursor() ? "> " : "  "}
-              {name}
+              {displayName(activeTab(), item)}
               {isActive() ? "  ●" : ""}
             </text>
           );
         }}
       </For>
-      <text style={{ fg: t().textMuted, marginTop: 1 }}>
-        <span style={{ fg: t().accent }}>j/k</span>:nav
+
+      <text style={{ fg: t().textMuted, marginTop: 2 }}>
+        <span style={{ fg: t().accent }}>tab</span>:switch
+        <span style={{ fg: t().accent }}> j/k</span>:nav
         <span style={{ fg: t().accent }}> spc</span>:select
         <span style={{ fg: t().accentDanger }}> esc</span>:close
       </text>

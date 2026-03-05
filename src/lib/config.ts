@@ -28,7 +28,11 @@ export function __setConfigDir(dir: string) {
   CONFIG_DIR = dir;
 }
 
-const DEFAULT_SETTINGS: AppSettings = { theme: "tokyonight-night" };
+const DEFAULT_SETTINGS: AppSettings = {
+  lightTheme: "catppuccin-latte",
+  darkTheme: "tokyonight-night",
+  themeMode: "system",
+};
 
 export function readSettings(): AppSettings {
   return safeReadJson<AppSettings>(SETTINGS_PATH()) ?? DEFAULT_SETTINGS;
