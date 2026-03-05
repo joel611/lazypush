@@ -1,4 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:opentui.com)",
+      "Skill(commit-commands:commit-push-pr)",
+      "Bash(git:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
   "hooks": {
     "PostToolUse": [
       {
